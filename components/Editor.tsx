@@ -6,14 +6,18 @@ import { Toolbar } from './Toolbar'
 import router from 'next/router'
 import { Modal } from '@alfiejones/flowbite-react'
 import { Button } from '../components/Button'
-import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { mutate } from 'swr'
 import { FaCog, FaSave, FaTrash } from 'react-icons/fa'
 import { Libre_Baskerville } from 'next/font/google'
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import classNames from 'classnames'
-
+import { Mention } from './Mention'
+import suggestion, { createItems, createSuggestion } from './MentionSuggestion'
+import useSWR from 'swr'
+import { Page } from '@prisma/client'
+import Error from 'next/error'
+ 
 
 const proseFont = Libre_Baskerville({
     weight: '400',
@@ -73,6 +77,9 @@ export function DeleteModal({ show, onConfirm, onCancel }: any) {
 }
 
 export default function EditorComponent({ id, title, createdAt, content }: any) {
+    const { data, error } = useSWR<Page[], Error>('/api/page');
+    let items = data ? createItems(data) : undefined;
+
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -80,6 +87,15 @@ export default function EditorComponent({ id, title, createdAt, content }: any) 
                 linkOnPaste: false,
                 openOnClick: false,
             }),
+            Mention.configure({
+                HTMLAttributes: {
+                  class: '',
+                },
+                suggestion: {
+                    render: suggestion.render,
+                    items: items
+                },
+              }),
         ],
         editorProps: {
             attributes: {
@@ -163,3 +179,4 @@ export default function EditorComponent({ id, title, createdAt, content }: any) 
         </div>
     )
 }
+

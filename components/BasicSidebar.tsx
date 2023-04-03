@@ -4,10 +4,8 @@ import { FaPlus, FaFile, FaHome, FaExclamationTriangle } from 'react-icons/fa'
 import { useRouter } from 'next/router';
 import { Page } from '@prisma/client';
 
-const fetcher = (url: RequestInfo | URL) => fetch(url).then((res) => res.json());
-
 export default function () {
-    const { data, error } = useSWR('/api/page', fetcher)
+    const { data, error } = useSWR('/api/page')
     const router = useRouter();
 
     if (error) return <div>An error occured.</div>
