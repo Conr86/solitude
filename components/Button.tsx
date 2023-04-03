@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { type ReactNode } from 'react'
 
-export function Button({ color = '', children, ...props }: any) {
+interface ButtonProps {
+  color?: string
+  children: ReactNode
+}
+
+export function Button ({ color = '', children, ...props }: ButtonProps): JSX.Element {
   return (
     <button
       className={
@@ -8,5 +13,5 @@ export function Button({ color = '', children, ...props }: any) {
       }{...props}>
       {children}
     </button>
-  );
+  )
 }

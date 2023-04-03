@@ -1,9 +1,9 @@
 import Editor from '@/components/Editor'
-import Router, { useRouter } from "next/router";
-import { Page } from '@prisma/client';
+import Router, { useRouter } from 'next/router'
+import { Page } from '@prisma/client'
 import useSWR from 'swr'
-import prisma from '@/helpers/prisma';
-import { InferGetServerSidePropsType } from 'next';
+import prisma from '@/helpers/prisma'
+import { InferGetServerSidePropsType } from 'next'
 import Error from 'next/error'
 
 // export async function getServerSideProps(context: any) {
@@ -24,15 +24,15 @@ import Error from 'next/error'
 //   return { props: { post } }
 // }
 
-const Post = () => {//{post}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Post = () => { // {post}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter()
   const id = router.query.id
 
-  //if (!post) return <div>An error occured.</div>
+  // if (!post) return <div>An error occured.</div>
 
   const { data, error } = useSWR(`/api/page/${id}`)
 
-  const post = data;
+  const post = data
 
   if (error) return <Error statusCode={error.statusCode} />
 
@@ -40,7 +40,7 @@ const Post = () => {//{post}: InferGetServerSidePropsType<typeof getServerSidePr
 
   return (
     <Editor {...post}/>
-  );
-};
+  )
+}
 
-export default Post;
+export default Post
