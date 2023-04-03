@@ -25,3 +25,4 @@ export const plugins = [
   require('@tailwindcss/typography'),
   require("flowbite/plugin")
 ];
+export const darkMode = 'media';
