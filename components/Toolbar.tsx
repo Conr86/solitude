@@ -149,11 +149,11 @@ function Toolbar({ editor }: ToolbarProps) {
     ]
 
     return (
-        <div className={"flex justify-center items-center p-2 -mx-10 my-6 top-0 z-10 bg-green-100 dark:bg-green-800 dark:text-white rounded-full " + classNames({ sticky: !inView })} ref={observe}>
+        <div className={"flex justify-center items-center p-2 -mx-10 my-6 top-0 z-10 bg-primary-100 dark:bg-primary-800 dark:text-white rounded-full " + classNames({ sticky: !inView })} ref={observe}>
             <div className="flex space-x-1">
                 {items.map((item, index) => (
                     <Fragment key={index}>
-                        {item.type === 'divider' ? <div className="border-r border-green-200 dark:border-green-700" /> : <MenuItem item={item} />}
+                        {item.type === 'divider' ? <div className="border-r border-primary-200 dark:border-primary-700" /> : <MenuItem item={item} />}
                     </Fragment>
                 ))}
             </div>

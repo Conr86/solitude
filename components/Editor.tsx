@@ -49,7 +49,7 @@ export function DeleteModal({ show, onConfirm, onCancel }: any) {
                     <Button color="bg-red-700 hover:bg-red-500" onClick={onConfirm}>
                         <FaTrash className='mr-2' /> Delete
                     </Button>
-                    <Button color="bg-blue-700 hover:bg-green-500" onClick={onCancel} >
+                    <Button color="bg-blue-700 hover:bg-primary-500" onClick={onCancel} >
                         Cancel
                     </Button>
                 </div>
@@ -90,6 +90,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
         setLastText(text);
         setLastSaved(Date.now());
         setUnsavedChanges(false);
+        console.log("id " + id + " man " + manualSave);
         if (!id && manualSave) {
             mutate(`/api/page`);
             await router.push(`/${(await res.json()).id}`);
@@ -118,7 +119,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
                 linkOnPaste: true,
                 openOnClick: true,
                 HTMLAttributes: {
-                    class: 'cursor-pointer hover:text-green-400',
+                    class: 'cursor-pointer hover:text-primary-400',
                     title: ""
                 }
             }),
@@ -141,7 +142,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
         onUpdate: ({ editor }) => setText(editor.getHTML())
     }, [id]);
 
-    const buttonClasses = "bg-green-100 hover:bg-green-400 dark:bg-transparent dark:hover:bg-green-900 dark:ring-green-800 dark:ring-1 dark:hover:ring-green-900 dark:text-white";
+    const buttonClasses = "bg-primary-100 hover:bg-primary-400 dark:bg-transparent dark:hover:bg-primary-900 dark:ring-primary-800 dark:ring-1 dark:hover:ring-primary-900 dark:text-white";
 
     return (
         <div className="px-4 md:px-6 leading-normal">
@@ -154,8 +155,8 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
                     <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">Last saved {dayjs().from(dayjs(lastSaved), true)} ago</p>
                 </div>
                 <div className="flex gap-2 h-10 -mt-4 grow flex-row place-content-end">
-                    <svg className={`py-3 px-2 ${!autosaveEnabled ? "fill-red-500" : !unsavedChanges ? "fill-green-600" : "fill-amber-500 animate-pulse"}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" /></svg>
-                    <Button color={buttonClasses} onClick={() => savePage()}><FaSave className="mr-2" /> Save</Button>
+                    <svg className={`py-3 px-2 ${!autosaveEnabled ? "fill-red-500" : !unsavedChanges ? "fill-primary-600" : "fill-amber-500 animate-pulse"}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" /></svg>
+                    <Button color={buttonClasses} onClick={() => savePage(true)}><FaSave className="mr-2" /> Save</Button>
                     {/* <Button color="bg-red-500 hover:bg-red-700" onClick={() => setModalOpen(true)}><FaTrash className="mr-2" /> Delete</Button> */}
                     <Menu as="div" className="relative inline-block text-left">
                         <div>

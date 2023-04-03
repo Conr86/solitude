@@ -13,7 +13,7 @@ export default props => {
 
   return (
     <NodeViewWrapper className="react-component inline">
-        <Link href={`/${props.node.attrs.url}`} className="text-green-400 no-underline hover:text-green-500">
+        <Link href={`/${props.node.attrs.url}`} className="text-primary-400 no-underline hover:text-primary-500">
           {props.node.attrs.name} 
         </Link>
     </NodeViewWrapper>

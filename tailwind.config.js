@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 import { fontFamily as _fontFamily } from "tailwindcss/defaultTheme";
-import { blue, slate } from "tailwindcss/colors";
+import { emerald, amber, sky, slate } from "tailwindcss/colors";
 export const content = [
-  "./node_modules/flowbite-react/**/*.js",
+  "./node_modules/@alfiejones/flowbite-react/**/*.js",
   "./app/**/*.{js,ts,jsx,tsx}",
   "./pages/**/*.{js,ts,jsx,tsx}",
   "./components/**/*.{js,ts,jsx,tsx}",
@@ -16,13 +16,12 @@ export const theme = {
     },
     // Set theme colors (Required config!)
     colors: {
-      primary: blue,
+      primary: sky,
       secondary: slate,
     },
   },
 };
 export const plugins = [
-  require('@tailwindcss/typography'),
-  require("flowbite/plugin")
+  require('@tailwindcss/typography')
 ];
 export const darkMode = 'media';
