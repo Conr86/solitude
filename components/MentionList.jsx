@@ -5,7 +5,8 @@ import React, {
   useState,
 } from 'react'
 
-export default forwardRef((props, ref) => {
+
+const MentionList = (props, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const selectItem = index => {
@@ -67,4 +68,6 @@ export default forwardRef((props, ref) => {
       }
     </div>
   )
-})
+}
+
+export default forwardRef(MentionList)

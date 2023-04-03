@@ -36,16 +36,16 @@ type ToolbarProps = {
 }
 
 function Toolbar({ editor }: ToolbarProps) {
+    const { observe, inView } = useInView({
+        rootMargin: '-1px 0px 0px 0px',
+        threshold: [1],
+    })
+
     if (!editor) {
         return null
     }
 
     const isCursorOverLink = editor.getAttributes('link').href
-
-    const { observe, inView } = useInView({
-        rootMargin: '-1px 0px 0px 0px',
-        threshold: [1],
-    })
 
     const items = [
         {

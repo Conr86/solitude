@@ -1,7 +1,9 @@
 import Editor from '@/components/Editor'
 
-export default () => {
+const NewPage = () => {
     return (
-        <Editor title={"New Page"} content={""} createdAt={""} id={0} />
+        <Editor title={"New Page"} content={""} createdAt={new Date()} id={0} updatedAt={null} />
     );
 };
+
+export default NewPage

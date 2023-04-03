@@ -15,6 +15,6 @@ model Page {
   //id String @id @default(auto()) @map("_id") @db.ObjectId
   title   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime? @updatedAt
   content String?
 }

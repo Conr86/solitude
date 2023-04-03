@@ -50,7 +50,7 @@ export default function EditorComponent ({ id, title, createdAt, updatedAt, cont
   const [text, setText] = React.useState<string>('')
   // Autosave
   dayjs.extend(relativeTime)
-  const [lastSaved, setLastSaved] = React.useState<Date>(updatedAt)
+  const [lastSaved, setLastSaved] = React.useState<Date | null>(updatedAt)
   const [unsavedChanges, setUnsavedChanges] = React.useState<boolean>(false)
   const [autosaveEnabled, setAutosaveEnabled] = React.useState<boolean>(Boolean(id))
   // Page title

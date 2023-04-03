@@ -1,8 +1,9 @@
-import React, { type ReactNode } from 'react'
+import React, { EventHandler, type ReactNode } from 'react'
 
 interface ButtonProps {
   color?: string
   children: ReactNode
+  onClick: () => void
 }
 
 export function Button ({ color = '', children, ...props }: ButtonProps): JSX.Element {

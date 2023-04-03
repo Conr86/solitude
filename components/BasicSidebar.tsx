@@ -63,7 +63,7 @@ export default function BasicSidebar (): JSX.Element {
                                 </button> */}
                             </div>
                             <p className="mb-3 text-sm text-gray-700 dark:text-white">
-                                You're currently working on an unsaved draft. Make sure to press the save button if you want to keep your work.
+                                You&apos;re currently working on an unsaved draft. Make sure to press the save button if you want to keep your work.
                             </p>
                         </div>
                     }
