@@ -126,7 +126,7 @@ export default function EditorComponent ({ id, title, createdAt, updatedAt, cont
   return (
         <div className="px-4 md:px-6 leading-normal">
             <input type="text" value={currentTitle} onChange={e => { setCurrentTitle(e.target.value) }}
-                className={`${headingFont.className} font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-4 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`} ></input>
+                className={`${headingFont.className} font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-1 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`} ></input>
             <div className="flex gap-2 flex-row">
                 <div>
                     <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">Created {createdAt ? new Date(createdAt).toLocaleString() : 'just now'}</p>
@@ -135,7 +135,7 @@ export default function EditorComponent ({ id, title, createdAt, updatedAt, cont
                       {lastSaved ? `Last saved ${dayjs().from(dayjs(lastSaved), true)} ago` : `Unsaved draft...`}
                     </p>
                 </div>
-                <div className="flex gap-2 h-10 -mt-4 grow flex-row place-content-end">
+                <div className="flex gap-2 h-10 grow flex-row place-content-end">
                     <svg className={`py-3 px-2 ${!autosaveEnabled ? 'fill-red-500' : !unsavedChanges ? 'fill-primary-600' : 'fill-amber-500 animate-pulse'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" /></svg>
                     <Button color={buttonClasses} onClick={async () => { await savePage(true) }}><FaSave className="mr-2" /> Save</Button>
                     {/* <Button color="bg-red-500 hover:bg-red-700" onClick={() => setModalOpen(true)}><FaTrash className="mr-2" /> Delete</Button> */}
