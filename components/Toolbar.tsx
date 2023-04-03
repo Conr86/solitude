@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react'
 import classNames from 'classnames'
 import { Editor } from '@tiptap/react'
-// import { useInView } from 'react-cool-inview'
 import useInView from "react-cool-inview"
 import MenuItem from './ToolbarItem'
 import {
