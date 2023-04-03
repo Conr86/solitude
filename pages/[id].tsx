@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import prisma from '@/helpers/prisma'
 import { InferGetServerSidePropsType } from 'next'
 import Error from 'next/error'
+import Head from 'next/head'
 
 // export async function getServerSideProps(context: any) {
 //   if (!context.query.id) {
@@ -38,9 +39,12 @@ const Post = () => { // {post}: InferGetServerSidePropsType<typeof getServerSide
 
   if (!data) return <div>Loading ...</div>
 
-  return (
-    <Editor {...post}/>
-  )
+  return (<>
+    <Head>
+      <title>{post.title} - Solitude</title>
+    </Head>
+    <Editor {...post} />
+  </>)
 }
 
 export default Post
