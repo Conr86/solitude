@@ -136,7 +136,9 @@ export default function EditorComponent ({ id, title, createdAt, updatedAt, cont
                     </p>
                 </div>
                 <div className="flex gap-2 h-10 grow flex-row place-content-end">
-                    <svg className={`py-3 px-2 ${!autosaveEnabled ? 'fill-red-500' : !unsavedChanges ? 'fill-primary-600' : 'fill-amber-500 animate-pulse'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" /></svg>
+                    <span title={!autosaveEnabled ? "Autosave disabled on new pages. Manually save your work" : unsavedChanges ? "Unsaved changes..." : "Saved"} className="mr-4">
+                      <svg className={`py-3 px-2 ${!autosaveEnabled ? 'fill-red-500' : !unsavedChanges ? 'fill-primary-600' : 'fill-amber-500 animate-pulse'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" /></svg>
+                    </span>
                     <Button color={buttonClasses} onClick={async () => { await savePage(true) }}><FaSave className="mr-2" /> Save</Button>
                     {/* <Button color="bg-red-500 hover:bg-red-700" onClick={() => setModalOpen(true)}><FaTrash className="mr-2" /> Delete</Button> */}
                     <Menu as="div" className="relative inline-block text-left">
