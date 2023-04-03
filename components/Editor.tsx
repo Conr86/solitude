@@ -131,7 +131,9 @@ export default function EditorComponent ({ id, title, createdAt, updatedAt, cont
                 <div>
                     <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">Created {createdAt ? new Date(createdAt).toLocaleString() : 'just now'}</p>
                     {/* <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">Modified {updatedAt ? new Date(updatedAt).toLocaleString() : "just now"}</p> */}
-                    <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">Last saved {dayjs().from(dayjs(lastSaved), true)} ago</p>
+                    <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">
+                      {lastSaved ? `Last saved ${dayjs().from(dayjs(lastSaved), true)} ago` : `Unsaved draft...`}
+                    </p>
                 </div>
                 <div className="flex gap-2 h-10 -mt-4 grow flex-row place-content-end">
                     <svg className={`py-3 px-2 ${!autosaveEnabled ? 'fill-red-500' : !unsavedChanges ? 'fill-primary-600' : 'fill-amber-500 animate-pulse'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" /></svg>
