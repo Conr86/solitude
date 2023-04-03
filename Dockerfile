@@ -28,6 +28,7 @@ COPY . .
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN npx prisma generate
+RUN npx prisma db push
 
 #RUN yarn build
 
