@@ -75,9 +75,6 @@ export const Mention = Node.create<MentionOptions>({
 
     addAttributes() {
         return {
-            count: {
-                default: 0,
-            },
             name: {
                 default: null,
                 parseHTML: element => element.getAttribute('data-name'),
@@ -111,14 +108,14 @@ export const Mention = Node.create<MentionOptions>({
     parseHTML() {
         return [
             {
-                tag: 'react-component',
+                tag: 'mention-component',
                 // tag: `a[data-type="${this.name}"]`,
             },
         ]
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['react-component', mergeAttributes(HTMLAttributes)]
+        return ['mention-component', mergeAttributes(HTMLAttributes)]
     },
 
     addNodeView() {
