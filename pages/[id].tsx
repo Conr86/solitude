@@ -39,7 +39,7 @@ const Post = () => {//{post}: InferGetServerSidePropsType<typeof getServerSidePr
   if (!data) return <div>Loading ...</div>
 
   return (
-    <Editor id={post.id} title={post.title} createdAt={post.createdAt} content={post.content}/>
+    <Editor {...post}/>
   );
 };
 
