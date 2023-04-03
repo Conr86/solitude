@@ -25,6 +25,11 @@ const proseFont = Libre_Baskerville({
     subsets: ['latin'],
 })
 
+const headingFont = Libre_Baskerville({
+    weight: '700',
+    subsets: ['latin'],
+})
+
 async function deletePage(id: number) {
     await fetch(`/api/page/${id}`, {
         method: 'DELETE',
@@ -135,7 +140,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
         ],
         editorProps: {
             attributes: {
-                class: `${proseFont.className} prose dark:prose-invert prose-sm sm:prose-base lg:prose-md xl:prose-lg focus:outline-none max-w-none`,
+                class: `${proseFont.className} prose dark:prose-invert prose-sm sm:prose-base lg:prose-md xl:prose-lg focus:outline-none max-w-none dark:text-gray-400`,
             },
         },
         content: content,
@@ -147,7 +152,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
     return (
         <div className="px-4 md:px-6 leading-normal">
             <input type="text" value={currentTitle} onChange={e => setCurrentTitle(e.target.value)}
-                className="font-bold font-sans break-normal text-gray-900 dark:text-white px-0 py-2 my-4 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit"  ></input>
+                className={`${headingFont.className} font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-4 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`}  ></input>
             <div className="flex gap-2 flex-row">
                 <div>
                     <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">Created {createdAt ? new Date(createdAt).toLocaleString() : "just now"}</p>

@@ -43,7 +43,7 @@ export default function () {
                                 <input type="text" id="simple-search" value={filterText} onChange={e => setFilterText(e.target.value)}
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search" />
                                 <button onClick={() => setFilterText("")} 
-                                    className={`${filterText == "" ? "hidden" : ""} absolute inset-y-0 right-0 text-gray-900  dark:text-gray-400 hover:text-gray-400 flex items-center pr-3`}><FaTimes/></button>
+                                    className={`${filterText == "" ? "hidden" : ""} absolute inset-y-0 right-0 text-gray-400 hover:text-gray-500 flex items-center pr-3`}><FaTimes/></button>
                             </div>
                         </div>
                         {data.filter((item: Page) => item.title.toLowerCase().includes(filterText.toLowerCase())).map((page: Page) =>
