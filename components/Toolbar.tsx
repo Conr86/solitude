@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import classNames from 'classnames'
 import { Editor } from '@tiptap/react'
 import useInView from "react-cool-inview"
-import MenuItem from './ToolbarItem'
+import MenuItem, { Item } from './ToolbarItem'
 import {
     RiBold,
     RiItalic,
@@ -47,21 +47,21 @@ function Toolbar({ editor }: ToolbarProps) {
 
     const isCursorOverLink = editor.getAttributes('link').href
 
-    const items = [
+    const items: Item[] = [
         {
-            icon: RiBold,
+            Icon: RiBold,
             title: 'Bold',
             action: () => editor.chain().focus().toggleBold().run(),
             isActive: () => editor.isActive('bold'),
         },
         {
-            icon: RiItalic,
+            Icon: RiItalic,
             title: 'Italic',
             action: () => editor.chain().focus().toggleItalic().run(),
             isActive: () => editor.isActive('italic'),
         },
         {
-            icon: RiStrikethrough,
+            Icon: RiStrikethrough,
             title: 'Strike',
             action: () => editor.chain().focus().toggleStrike().run(),
             isActive: () => editor.isActive('strike'),
@@ -70,37 +70,37 @@ function Toolbar({ editor }: ToolbarProps) {
             type: 'divider',
         },
         {
-            icon: RiH1,
+            Icon: RiH1,
             title: 'Heading 1',
             action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
             isActive: () => editor.isActive('heading', { level: 1 }),
         },
         {
-            icon: RiH2,
+            Icon: RiH2,
             title: 'Heading 2',
             action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
             isActive: () => editor.isActive('heading', { level: 2 }),
         },
         {
-            icon: RiH3,
+            Icon: RiH3,
             title: 'Heading 3',
             action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
             isActive: () => editor.isActive('heading', { level: 3 }),
         },
         {
-            icon: RiParagraph,
+            Icon: RiParagraph,
             title: 'Paragraph',
             action: () => editor.chain().focus().setParagraph().run(),
             isActive: () => editor.isActive('paragraph'),
         },
         {
-            icon: RiListUnordered,
+            Icon: RiListUnordered,
             title: 'Bullet List',
             action: () => editor.chain().focus().toggleBulletList().run(),
             isActive: () => editor.isActive('bulletList'),
         },
         {
-            icon: RiListOrdered,
+            Icon: RiListOrdered,
             title: 'Ordered List',
             action: () => editor.chain().focus().toggleOrderedList().run(),
             isActive: () => editor.isActive('orderedList'),
@@ -109,13 +109,13 @@ function Toolbar({ editor }: ToolbarProps) {
             type: 'divider',
         },
         {
-            icon: RiDoubleQuotesL,
+            Icon: RiDoubleQuotesL,
             title: 'Blockquote',
             action: () => editor.chain().focus().toggleBlockquote().run(),
             isActive: () => editor.isActive('blockquote'),
         },
         {
-            icon: RiSeparator,
+            Icon: RiSeparator,
             title: 'Horizontal Rule',
             action: () => editor.chain().focus().setHorizontalRule().run(),
         },
@@ -123,13 +123,13 @@ function Toolbar({ editor }: ToolbarProps) {
             type: 'divider',
         },
         {
-            icon: RiFormatClear,
+            Icon: RiFormatClear,
             title: 'Clear Format',
             action: () => editor.chain().focus().clearNodes().unsetAllMarks()
                 .run(),
         },
         {
-            icon: RiLink,
+            Icon: RiLink,
             title: 'Link',
             action: () => setLink(editor),
         },
@@ -137,12 +137,12 @@ function Toolbar({ editor }: ToolbarProps) {
             type: 'divider',
         },
         {
-            icon: RiArrowGoBackLine,
+            Icon: RiArrowGoBackLine,
             title: 'Undo',
             action: () => editor.chain().focus().undo().run(),
         },
         {
-            icon: RiArrowGoForwardLine,
+            Icon: RiArrowGoForwardLine,
             title: 'Redo',
             action: () => editor.chain().focus().redo().run(),
         },
@@ -153,7 +153,7 @@ function Toolbar({ editor }: ToolbarProps) {
             <div className="flex space-x-1">
                 {items.map((item, index) => (
                     <Fragment key={index}>
-                        {item.type === 'divider' ? <div className="border-r border-primary-200 dark:border-primary-700" /> : <MenuItem item={item} />}
+                        {item.type === 'divider' ? <div className="border-r border-primary-200 dark:border-primary-700" /> : <MenuItem {...item} />}
                     </Fragment>
                 ))}
             </div>
