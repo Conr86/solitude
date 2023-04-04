@@ -1,7 +1,7 @@
 import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
 
-import MentionList from './MentionList.jsx'
+import MentionList from '../components/MentionList.jsx'
 
 export function createItems(pages) {
     let v = [];

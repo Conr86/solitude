@@ -4,7 +4,7 @@ import { PluginKey } from '@tiptap/pm/state'
 import Suggestion, { SuggestionOptions } from '@tiptap/suggestion'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 
-import MentionLink from './MentionLink'
+import MentionLink from '../components/MentionLink'
 
 export type MentionOptions = {
     HTMLAttributes: Record<string, any>
