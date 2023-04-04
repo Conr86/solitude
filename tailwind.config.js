@@ -25,3 +25,8 @@ export const plugins = [
   require('@tailwindcss/typography')
 ];
 export const darkMode = 'media';
+export const safelist = [
+  {
+    pattern: /pl-(2|6|10|14|18)/, // Need for runtime padding on tree menu items
+  }
+]

@@ -17,4 +17,8 @@ model Page {
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
   content String?
+  parentId  Int?  
+  parent    Page?    @relation("ParentChild", fields: [parentId], references: [id])
+  children  Page[]   @relation("ParentChild")
+  
 }
