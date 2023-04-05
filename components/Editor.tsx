@@ -48,8 +48,8 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
   // Scrolling
   const [showTopBtn, setShowTopBtn] = useState<boolean>(false);
   // Editor content
-  const [lastText, setLastText] = React.useState<string>('')
-  const [text, setText] = React.useState<string>('')
+  const [lastText, setLastText] = React.useState<string | null>(content)
+  const [text, setText] = React.useState<string | null>(content)
   // Autosave
   dayjs.extend(relativeTime)
   const [lastSaved, setLastSaved] = React.useState<Date | null>(updatedAt)
