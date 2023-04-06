@@ -1,6 +1,7 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
+import Focus from '@tiptap/extension-focus'
 import React, { useEffect, useState, Fragment } from 'react'
 import { Toolbar } from './Toolbar'
 import router from 'next/router'
@@ -114,7 +115,13 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
   // Create editor
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        paragraph : {
+          HTMLAttributes: {
+            class: 'py-1 px-4 -mx-4 rounded-md',
+          },
+        },
+      }),
       Link.configure({
         linkOnPaste: true,
         openOnClick: true,
@@ -128,7 +135,12 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
           render: suggestion.render,
           items
         }
-      })
+      }),
+      Focus.configure({
+        className: 'text-gray-900 dark:text-gray-300',
+        // bg-gray-100 dark:bg-primary-950
+      }),
+      
     ],
     editorProps: {
       attributes: {
