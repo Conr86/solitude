@@ -1,7 +1,9 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
+import CharacterCount from '@tiptap/extension-character-count'
 import Focus from '@tiptap/extension-focus'
+import Typography from '@tiptap/extension-typography'
 import React, { useEffect, useState, Fragment } from 'react'
 import { Toolbar } from './Toolbar'
 import router from 'next/router'
@@ -20,12 +22,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { DeleteModal } from './DeleteModal'
 
 const proseFont = Libre_Baskerville({
-  weight: '400',
-  subsets: ['latin']
-})
-
-const headingFont = Libre_Baskerville({
-  weight: '700',
+  weight: ['400', '700'],
   subsets: ['latin']
 })
 
@@ -116,7 +113,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        paragraph : {
+        paragraph: {
           HTMLAttributes: {
             class: 'py-1 px-4 -mx-4 rounded-md',
           },
@@ -130,21 +127,23 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
           title: ''
         }
       }),
+      Typography,
+      CharacterCount,
       Mention.configure({
         suggestion: {
           render: suggestion.render,
           items
         }
       }),
-      Focus.configure({
-        className: 'text-gray-900 dark:text-gray-300',
-        // bg-gray-100 dark:bg-primary-950
-      }),
-      
+      // Focus.configure({
+      //   className: 'text-gray-950 dark:text-gray-300',
+      //   // bg-gray-100 dark:bg-primary-950
+      // }),
+
     ],
     editorProps: {
       attributes: {
-        class: `${proseFont.className} prose dark:prose-invert prose-sm sm:prose-base lg:prose-md xl:prose-lg focus:outline-none max-w-none dark:text-gray-400`
+        class: `${proseFont.className} prose dark:prose-invert prose-sm sm:prose-base lg:prose-md xl:prose-lg focus:outline-none max-w-none text-gray-600 dark:text-gray-400`
       }
     },
     content,
@@ -154,15 +153,18 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
   const buttonClasses = 'bg-primary-100 hover:bg-primary-400 dark:bg-transparent dark:hover:bg-primary-900 dark:ring-primary-800 dark:ring-1 dark:hover:ring-primary-900 dark:text-white'
 
   return (
-    <div className="px-4 md:px-6 leading-normal">
+    <div className="px-4 md:px-6">
       <input type="text" value={currentTitle} onChange={e => { setCurrentTitle(e.target.value) }}
-        className={`${headingFont.className} font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-1 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`} ></input>
+        className={`${proseFont.className} font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-1 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`} ></input>
       <div className="flex gap-2 flex-row">
-        <div>
-          <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">Created {createdAt ? new Date(createdAt).toLocaleString() : 'just now'}</p>
+        <div className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">
+          <p>Created {createdAt ? new Date(createdAt).toLocaleString() : 'just now'}</p>
           {/* <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">Modified {updatedAt ? new Date(updatedAt).toLocaleString() : "just now"}</p> */}
-          <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">
+          <p>
             {lastSaved ? `Last saved ${dayjs().from(dayjs(lastSaved), true)} ago` : `Unsaved draft...`}
+          </p>
+          <p>
+            {editor?.storage.characterCount.words()} words
           </p>
         </div>
         <div className="flex gap-2 h-10 grow flex-row place-content-end">
