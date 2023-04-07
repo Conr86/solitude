@@ -13,10 +13,10 @@ export function DeleteModal({ show, onConfirm, onCancel }: any): JSX.Element {
           Are you sure you want to delete this page?
         </h3>
         <div className="flex justify-center gap-4">
-          <Button color="dark:text-white bg-red-700 hover:bg-red-800" onClick={onConfirm}>
+          <Button color="text-white bg-red-700 hover:bg-red-800" onClick={onConfirm}>
             <FaTrash className='mr-2' /> Delete
           </Button>
-          <Button color="dark:text-white bg-primary-700 hover:bg-primary-800" onClick={onCancel}>
+          <Button color="text-white bg-primary-700 hover:bg-primary-800" onClick={onCancel}>
             <FaTimes className='mr-2' /> Cancel
           </Button>
         </div>
