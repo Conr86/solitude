@@ -3,19 +3,6 @@ import tippy from 'tippy.js'
 
 import MentionList from '../components/MentionList.jsx'
 
-export function createItems(pages) {
-    let v = [];
-    pages.forEach(e => {
-        v.push({name: e.title, url: e.id});
-    });
-    let items = ({ query }) => {
-        return v
-          .filter(item => item.name.toLowerCase().startsWith(query.toLowerCase()))
-          .slice(0, 5)
-      }
-    return items;
-}
-
 export default {
   render: () => {
     let component

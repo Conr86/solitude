@@ -8,11 +8,12 @@ import { InteractionMode, StaticTreeDataProvider, Tree, UncontrolledTreeEnvironm
 import { treeify } from '@/helpers/Treeify'
 import { NavTreeLink } from './NavTreeLink'
 import { CustomTreeDataProvider } from '@/helpers/CustomTreeDataProvider'
+import { apiBaseUrl } from '@/helpers/apiSettings'
 
 export default function TreeSidebar(): JSX.Element {
     const [filterText, setFilterText] = useState('')
     const [sidebarVisible, setSidebarVisible] = useState(true);
-    const { data, error } = useSWR('/api/page')
+    const { data, error } = useSWR(`${apiBaseUrl}/page`)
     const router = useRouter()
 
     if (error) return <div>An error occured.</div>
@@ -22,7 +23,7 @@ export default function TreeSidebar(): JSX.Element {
     const dataProvider = new CustomTreeDataProvider(treeify(data))
 
     async function UpdateParent(id: number, parentConnectObj: any) {
-        await fetch(`/api/page/${id}`, {
+        await fetch(`${apiBaseUrl}/page/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

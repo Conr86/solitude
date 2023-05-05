@@ -4,11 +4,12 @@ import { FaPlus, FaFile, FaHome, FaExclamationTriangle, FaTimes, FaChevronRight 
 import { useRouter } from 'next/router'
 import { type Page } from '@prisma/client'
 import { useState } from 'react'
+import { apiBaseUrl } from '@/helpers/apiSettings'
 
 export default function BasicSidebar(): JSX.Element {
     const [filterText, setFilterText] = useState('')
     const [sidebarVisible, setSidebarVisible] = useState(true);
-    const { data, error } = useSWR('/api/page')
+    const { data, error } = useSWR(`${apiBaseUrl}/page`)
     const router = useRouter()
 
     if (error) return <div>An error occured.</div>

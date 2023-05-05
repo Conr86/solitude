@@ -14,12 +14,13 @@ import { Libre_Baskerville } from 'next/font/google'
 import { Menu, Transition } from '@headlessui/react'
 import classNames from 'classnames'
 import { Mention } from '../helpers/Mention'
-import suggestion, { createItems } from '../helpers/MentionSuggestion'
+import suggestion from '../helpers/MentionSuggestion'
 import { type Page } from '@prisma/client'
 import type Error from 'next/error'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { DeleteModal } from './DeleteModal'
+import { apiBaseUrl } from '@/helpers/apiSettings'
 
 const proseFont = Libre_Baskerville({
   weight: ['400', '700'],
@@ -27,19 +28,38 @@ const proseFont = Libre_Baskerville({
 })
 
 async function deletePage(id: number): Promise<void> {
-  await fetch(`/api/page/${id}`, {
+  await fetch(`${apiBaseUrl}/page/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     }
   })
-  await mutate('/api/page')
+  await mutate(`${apiBaseUrl}/page`)
   await router.push('/')
 }
 
+interface NameUrlPair {
+  name: string
+  url: number
+}
+
+function createItems(pages: Page[]) {
+  let v : NameUrlPair[] = [];
+  pages.forEach(e => {
+      v.push({name: e.title, url: e.id});
+  });
+  let items = ({ query } : any) => {
+      return v
+        .filter((item : NameUrlPair) => item.name.toLowerCase().startsWith(query.toLowerCase()))
+        .slice(0, 5)
+    }
+  return items;
+}
+
 export default function EditorComponent({ id, title, createdAt, updatedAt, content }: Page): JSX.Element {
-  const { data } = useSWR<Page[], Error>('/api/page')
-  const items = (data != null) ? createItems(data) : undefined
+  const { data, error } = useSWR<Page[], Error>(`${apiBaseUrl}/page`)
+  console.log(error);
+  const items = (!error && data) ? createItems(data) : undefined
 
   // Modal
   const [modalOpen, setModalOpen] = useState<boolean>(false)
@@ -75,24 +95,23 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
 
   async function savePage(manualSave: boolean = false): Promise<void> {
     const body = { title: currentTitle, content: text }
-    const res = await fetch(`/api/page/${id}`, {
+    const res = await fetch(`${apiBaseUrl}/page/${id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)
     })
-    await mutate(`/api/page/${id}`)
+    await mutate(`${apiBaseUrl}/page/${id}`)
     // TODO - only call this if the title has changed
-    await mutate(`/api/page`)
-    await mutate(`/api/page/w`)
+    await mutate(`${apiBaseUrl}/page`)
     setLastText(text)
     setLastSaved(new Date())
     setUnsavedChanges(false)
   }
 
   async function createPage (): Promise<void> {
-    const res = await fetch(`/api/page`, {
+    const res = await fetch(`${apiBaseUrl}/page`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -100,7 +119,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
       body: JSON.stringify({ title: currentTitle, content: text })
     })
     console.log(res)
-    await mutate(`/api/page`)
+    await mutate(`${apiBaseUrl}/page`)
     await router.push(`/${(await res.json()).id}`)
   }
 

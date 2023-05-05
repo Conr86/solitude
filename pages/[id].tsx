@@ -2,6 +2,7 @@ import Editor from '@/components/Editor'
 import Router, { useRouter } from 'next/router'
 import { Page } from '@prisma/client'
 import useSWR from 'swr'
+import { apiBaseUrl } from '@/helpers/apiSettings'
 import prisma from '@/helpers/prisma'
 import { InferGetServerSidePropsType } from 'next'
 import Error from 'next/error'
@@ -31,7 +32,7 @@ const Post = () => { // {post}: InferGetServerSidePropsType<typeof getServerSide
 
   // if (!post) return <div>An error occured.</div>
 
-  const { data, error } = useSWR(`/api/page/${id}`)
+  const { data, error } = useSWR(`${apiBaseUrl}/page/${id}`)
 
   const post = data
 
