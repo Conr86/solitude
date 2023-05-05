@@ -63,7 +63,38 @@ export default function TreeSidebar(): JSX.Element {
                         canDropOnNonFolder={true}
                         canReorderItems={true}
                         onDrop={async (items, target) => {
-                            if (target.targetType === "item") {
+                            if (target.targetType === "between-items") {
+                                if (target.depth == 0) {
+                                    console.log(`Attempting to move page to root`);
+                                    await fetch(`/api/page/${items[0].data.id}`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            parent: {
+                                                disconnect: true,
+                                            }
+                                        })
+                                    })
+                                } else {
+                                    console.log(`Attempting to child page to ${target.parentItem}`);
+                                    await fetch(`/api/page/${items[0].data.id}`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            parent: {
+                                                connect: {
+                                                    id: target.parentItem
+                                                },
+                                            }
+                                        })
+                                    })
+                                }
+                            }
+                            else if (target.targetType === "item") {
                                 const body = {
                                     children: {
                                         connect: {
@@ -71,7 +102,7 @@ export default function TreeSidebar(): JSX.Element {
                                         },
                                     }
                                 }
-                                console.log(`Attempting to append the following to ${target.targetItem}`);
+                                console.log(`Attempting to child page to ${target.targetItem}`);
                                 console.log(body)
                                 // const x = await fetch(`/api/page/${target.targetItem}`, {
                                 //     method: 'POST',
