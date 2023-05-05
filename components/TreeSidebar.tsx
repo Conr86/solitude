@@ -21,7 +21,17 @@ export default function TreeSidebar(): JSX.Element {
 
     const dataProvider = new CustomTreeDataProvider(treeify(data))
 
-    //dataProvider.update(3);
+    async function UpdateParent(id: number, parentConnectObj: any) {
+        await fetch(`/api/page/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                parent: parentConnectObj
+            })
+        })
+    }
 
     return (
         <div>
@@ -54,6 +64,16 @@ export default function TreeSidebar(): JSX.Element {
                             </div>
                         </div>
                     </ul>
+                    {filterText != "" && 
+                    <ul className="pt-2 space-y-2">
+                        {data.filter((item: Page) => item.title.toLowerCase().includes(filterText.toLowerCase())).map((page: Page) =>
+                            <li key={page.id}>
+                                <NavLink href={page.id} Icon={FaFile} label={page.title} />
+                            </li>
+                        )}
+                    </ul>
+                    }
+                    {filterText == "" && 
                     <UncontrolledTreeEnvironment
                         dataProvider={dataProvider}
                         getItemTitle={item => item.data.title}
@@ -63,78 +83,37 @@ export default function TreeSidebar(): JSX.Element {
                         canDropOnNonFolder={true}
                         canReorderItems={true}
                         onDrop={async (items, target) => {
-                            if (target.targetType === "between-items") {
-                                if (target.depth == 0) {
-                                    console.log(`Attempting to move page to root`);
-                                    await fetch(`/api/page/${items[0].data.id}`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({
-                                            parent: {
-                                                disconnect: true,
-                                            }
-                                        })
-                                    })
-                                } else {
-                                    console.log(`Attempting to child page to ${target.parentItem}`);
-                                    await fetch(`/api/page/${items[0].data.id}`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({
-                                            parent: {
-                                                connect: {
-                                                    id: target.parentItem
-                                                },
-                                            }
-                                        })
-                                    })
-                                }
+                            if (target.depth == 0) {
+                                console.log(`Attempting to move page to root`);
+                                await UpdateParent(items[0].data.id, {
+                                    disconnect: true,
+                                })
+                            }
+                            else if (target.targetType === "between-items") {
+                                console.log(`Attempting to child page to ${target.parentItem}`);
+                                await UpdateParent(items[0].data.id, {
+                                    connect: {
+                                        id: target.parentItem
+                                    },
+                                })
                             }
                             else if (target.targetType === "item") {
-                                const body = {
-                                    children: {
-                                        connect: {
-                                            id: items[0].data.id
-                                        },
-                                    }
-                                }
                                 console.log(`Attempting to child page to ${target.targetItem}`);
-                                console.log(body)
-                                // const x = await fetch(`/api/page/${target.targetItem}`, {
-                                //     method: 'POST',
-                                //     headers: {
-                                //       'Content-Type': 'application/json'
-                                //     },
-                                //     body: JSON.stringify(body)
-                                //   })
-                                const y = await fetch(`/api/page/${items[0].data.id}`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
+                                await UpdateParent(items[0].data.id, {
+                                    connect: {
+                                        id: target.targetItem
                                     },
-                                    body: JSON.stringify({
-                                        parent: {
-                                            connect: {
-                                                id: target.targetItem
-                                            },
-                                        }
-                                    })
                                 })
-                                console.log(y);
                             }
                         }}
                         defaultInteractionMode={InteractionMode.ClickArrowToExpand}
-                        renderItemsContainer={({ children, containerProps }) => <ul className="" {...containerProps}>{children}</ul>}
+                        renderItemsContainer={({ children, containerProps }) => <ul {...containerProps}>{children}</ul>}
                         renderItemArrow={({ item, context }) => <span {...context.arrowProps} >{item.children?.length != 0 ? context.isExpanded ? <FaChevronDown /> : <FaChevronRight /> : null}</span>}
                         renderItem={(props) => <NavTreeLink Icon={FaFile} {...props} />}
                     >
                         <Tree treeId="tree-2" rootItem="root" treeLabel="Tree Example" />
                     </UncontrolledTreeEnvironment>
-
+                    }
                     {router.asPath === '/new' &&
                         <div id="dropdown-cta" className="p-4 mt-6 rounded-lg bg-yellow-100 dark:bg-red-800" role="alert">
                             <div className="flex items-center mb-3 text-orange-900">
