@@ -7,7 +7,6 @@ import { useState } from 'react'
 import { InteractionMode, StaticTreeDataProvider, Tree, UncontrolledTreeEnvironment } from 'react-complex-tree'
 import { treeify } from '@/helpers/Treeify'
 import { NavTreeLink } from './NavTreeLink'
-import { CustomTreeDataProvider } from '@/helpers/CustomTreeDataProvider'
 import { apiBaseUrl } from '@/helpers/apiSettings'
 
 export default function TreeSidebar(): JSX.Element {
@@ -20,11 +19,11 @@ export default function TreeSidebar(): JSX.Element {
 
     if (!data) return <div>Loading ...</div>
 
-    const dataProvider = new CustomTreeDataProvider(treeify(data))
+    const dataProvider = new StaticTreeDataProvider(treeify(data))
 
     async function UpdateParent(id: number, parentConnectObj: any) {
         await fetch(`${apiBaseUrl}/page/${id}`, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -65,55 +64,56 @@ export default function TreeSidebar(): JSX.Element {
                             </div>
                         </div>
                     </ul>
-                    {filterText != "" && 
-                    <ul className="pt-2 space-y-2">
-                        {data.filter((item: Page) => item.title.toLowerCase().includes(filterText.toLowerCase())).map((page: Page) =>
-                            <li key={page.id}>
-                                <NavLink href={page.id} Icon={FaFile} label={page.title} />
-                            </li>
-                        )}
-                    </ul>
+                    {filterText != "" &&
+                        <ul className="pt-2 space-y-2">
+                            {data.filter((item: Page) => item.title.toLowerCase().includes(filterText.toLowerCase())).map((page: Page) =>
+                                <li key={page.id}>
+                                    <NavLink href={page.id} Icon={FaFile} label={page.title} />
+                                </li>
+                            )}
+                        </ul>
                     }
-                    {filterText == "" && 
-                    <UncontrolledTreeEnvironment
-                        dataProvider={dataProvider}
-                        getItemTitle={item => item.data.title}
-                        viewState={{}}
-                        canDragAndDrop={true}
-                        canDropOnFolder={true}
-                        canDropOnNonFolder={true}
-                        canReorderItems={true}
-                        onDrop={async (items, target) => {
-                            if (target.depth == 0) {
-                                console.log(`Attempting to move page to root`);
-                                await UpdateParent(items[0].data.id, {
-                                    disconnect: true,
-                                })
-                            }
-                            else if (target.targetType === "between-items") {
-                                console.log(`Attempting to child page to ${target.parentItem}`);
-                                await UpdateParent(items[0].data.id, {
-                                    connect: {
-                                        id: target.parentItem
-                                    },
-                                })
-                            }
-                            else if (target.targetType === "item") {
-                                console.log(`Attempting to child page to ${target.targetItem}`);
-                                await UpdateParent(items[0].data.id, {
-                                    connect: {
-                                        id: target.targetItem
-                                    },
-                                })
-                            }
-                        }}
-                        defaultInteractionMode={InteractionMode.ClickArrowToExpand}
-                        renderItemsContainer={({ children, containerProps }) => <ul {...containerProps}>{children}</ul>}
-                        renderItemArrow={({ item, context }) => <span {...context.arrowProps} >{item.children?.length != 0 ? context.isExpanded ? <FaChevronDown /> : <FaChevronRight /> : null}</span>}
-                        renderItem={(props) => <NavTreeLink Icon={FaFile} {...props} />}
-                    >
-                        <Tree treeId="tree-2" rootItem="root" treeLabel="Tree Example" />
-                    </UncontrolledTreeEnvironment>
+                    {filterText == "" &&
+                        <UncontrolledTreeEnvironment
+                            dataProvider={dataProvider}
+                            getItemTitle={item => item.data.title}
+                            viewState={{}}
+                            canDragAndDrop={true}
+                            canDropOnFolder={true}
+                            canDropOnNonFolder={true}
+                            canReorderItems={true}
+                            onDrop={async (items, target) => {
+                                if (target.targetType === "between-items") {
+                                    if (target.depth == 0) {
+                                        console.log(`Attempting to move page to root`);
+                                        await UpdateParent(items[0].data.id, {
+                                            disconnect: true,
+                                        })
+                                    } else {
+                                        console.log(`Attempting to child page to ${target.parentItem}`);
+                                        await UpdateParent(items[0].data.id, {
+                                            connect: {
+                                                id: target.parentItem
+                                            },
+                                        })
+                                    }
+                                }
+                                else if (target.targetType === "item") {
+                                    console.log(`Attempting to child page to ${target.targetItem}`);
+                                    await UpdateParent(items[0].data.id, {
+                                        connect: {
+                                            id: target.targetItem
+                                        },
+                                    })
+                                }
+                            }}
+                            defaultInteractionMode={InteractionMode.ClickArrowToExpand}
+                            renderItemsContainer={({ children, containerProps }) => <ul {...containerProps}>{children}</ul>}
+                            renderItemArrow={({ item, context }) => <span {...context.arrowProps} >{item.children?.length != 0 ? context.isExpanded ? <FaChevronDown /> : <FaChevronRight /> : null}</span>}
+                            renderItem={(props) => <NavTreeLink Icon={FaFile} {...props} />}
+                        >
+                            <Tree treeId="tree-2" rootItem="root" treeLabel="Tree Example" />
+                        </UncontrolledTreeEnvironment>
                     }
                     {router.asPath === '/new' &&
                         <div id="dropdown-cta" className="p-4 mt-6 rounded-lg bg-yellow-100 dark:bg-red-800" role="alert">
