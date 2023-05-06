@@ -28,8 +28,8 @@ class PageHandler {
     return page;
   }
 
-  // PUT /api/page/
-  @Put()
+  // POST /api/page/
+  @Post()
   @HttpCode(201)
   async createUser(@Body() body: Page) {
     // Create data in your database
@@ -39,8 +39,8 @@ class PageHandler {
     return page;
   }
 
-  // POST /api/page/:id
-  @Post('/:id')
+  // PUT /api/page/:id
+  @Put('/:id')
   @HttpCode(201)
   async updateUser(@Param('id') id: string, @Body() body: Page) {
     // Update data in your database
