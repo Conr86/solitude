@@ -1,16 +1,16 @@
 import { TreeItem, TreeItemIndex } from "react-complex-tree";
-import {type Page} from 'prisma/prisma-client'
+import {Prisma, type Page} from 'prisma/prisma-client'
 
-type PageE = (Page & {
-    children: {
-        id: number;
-    }[];
-})
+// Create PageWithChildren type
+const pageWithChildren = Prisma.validator<Prisma.PageArgs>()({
+    include: { children: { select: {id : true}} },
+  })
+export type PageWithChildren = Prisma.PageGetPayload<typeof pageWithChildren>
 
-export function treeify(pages: PageE[]): Record<TreeItemIndex, TreeItem<Page>> {
+export function treeify(pages: PageWithChildren[]): Record<TreeItemIndex, TreeItem<Page>> {
     let items: Record<TreeItemIndex, TreeItem<Page>> = {}
     
-    Array.from(pages).forEach((p: PageE) => {
+    Array.from(pages).forEach((p: PageWithChildren) => {
         items[p.id] = {
             index: p.id,
             canMove: true,
