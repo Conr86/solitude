@@ -1,36 +1,13 @@
 import Editor from '@/components/Editor'
-import Router, { useRouter } from 'next/router'
-import { Page } from '@prisma/client'
+import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { apiBaseUrl } from '@/helpers/apiSettings'
-import prisma from '@/helpers/prisma'
-import { InferGetServerSidePropsType } from 'next'
 import Error from 'next/error'
 import Head from 'next/head'
 
-// export async function getServerSideProps(context: any) {
-//   if (!context.query.id) {
-//     return;
-//   }
-//   const postId = +context.query.id
-//   // Fetch data from external API
-//   const post = await prisma.page.findUnique({
-//     where: { id: postId },
-//     select: {
-//       title: true,
-//       content: true
-//     }
-//   });
-
-//   // Pass data to the page via props
-//   return { props: { post } }
-// }
-
-const Post = () => { // {post}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Post = () => {
   const router = useRouter()
   const id = router.query.id
-
-  // if (!post) return <div>An error occured.</div>
 
   const { data, error } = useSWR(`${apiBaseUrl}/page/${id}`)
 

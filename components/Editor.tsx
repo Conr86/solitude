@@ -4,7 +4,7 @@ import { Toolbar } from './Toolbar'
 import router from 'next/router'
 import { Button } from '../components/Button'
 import useSWR, { mutate } from 'swr'
-import { FaAngleUp, FaCog, FaSave, FaTrash } from 'react-icons/fa'
+import { FaAngleUp, FaCog, FaMarkdown, FaRegFileAlt, FaSave, FaTrash } from 'react-icons/fa'
 import { Menu, Transition } from '@headlessui/react'
 import classNames from 'classnames'
 import { type Page } from '@prisma/client'
@@ -16,6 +16,7 @@ import { apiBaseUrl } from '@/helpers/apiSettings'
 import { PageState, pageStateReducer }  from '@/helpers/pageStateReducer';
 import { createItems, getEditorProps, getExtensions, proseFont } from '@/helpers/tiptap.config'
 
+// Delete a page with the given ID
 async function deletePage(id: number): Promise<void> {
   await fetch(`${apiBaseUrl}/page/${id}`, {
     method: 'DELETE',
@@ -23,10 +24,13 @@ async function deletePage(id: number): Promise<void> {
       'Content-Type': 'application/json'
     }
   })
+  // Let SWR know that the page tree structure has changed and sidebar needs updating
   await mutate(`${apiBaseUrl}/page`)
+  // Redirect to Home
   await router.push('/')
 }
 
+// Create a page with current editor contents and title and redirect to that new page
 async function createPage (page : PageState): Promise<void> {
   const res = await fetch(`${apiBaseUrl}/page`, {
     method: 'POST',
@@ -36,20 +40,25 @@ async function createPage (page : PageState): Promise<void> {
     body: JSON.stringify({ title: page.currentTitle, content: page.currentText })
   })
   console.log(res)
+  // Let SWR know that the page tree structure has changed and sidebar needs updating
   await mutate(`${apiBaseUrl}/page`)
+  // Redirect to the new page
   await router.push(`/${(await res.json()).id}`)
 }
 
 export default function EditorComponent({ id, title, createdAt, updatedAt, content }: Page): JSX.Element {
   const { data, error } = useSWR<Page[], Error>(`${apiBaseUrl}/page`)
 
+  // State for controlling display-related values
   const [displayState, setDisplayState] = useState({
     modalOpen: false,
     showTopBtn: false
   })
 
-  const autosaveEnabled = Boolean(id);
+  // Check if the page is new (id not set)
+  const isNewPage = !Boolean(id);
 
+  // Set initial page state on component mount or when content/title changes
   useEffect(() => {
     dispatch({type:'opened', page: {
       lastSaved: updatedAt,
@@ -61,6 +70,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
     }})
   },[content, id, title, updatedAt])
 
+  // Reducer for managing page state
   const [page, dispatch] = useReducer(pageStateReducer, {
     lastSaved: updatedAt,
     unsavedChanges: false,
@@ -70,10 +80,11 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
     lastTitle: title
   })
 
-  // Autosave
+  // Extend dayjs with relativeTime plugin
+  // relativeTime lets use calculate "Saved two days ago..." from two dates
   dayjs.extend(relativeTime)
 
-  // Scroll to top functionality
+  // Scroll to top detection functionality
   useEffect(() => {
     window.addEventListener('scroll', () => {
       if (window.scrollY > 400) {
@@ -83,6 +94,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
       }
     });
   }, [displayState]);
+  // Function to scroll to the top of the page
   const goToTop = () => {
     window.scrollTo({
       top: 0,
@@ -90,7 +102,9 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
     });
   };
 
+  // Save page content from given page state for given id
   async function savePage(id : number, page : PageState): Promise<void> {
+    // Note that we don't include modifiedAt as this is calculated automatically by the DB
     await fetch(`${apiBaseUrl}/page/${id}`, {
       method: 'PUT',
       headers: {
@@ -98,10 +112,13 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
       },
       body: JSON.stringify({ title: page.currentTitle, content: page.currentText })
     })
+    // Let the cache know that this page has changed
     await mutate(`${apiBaseUrl}/page/${id}`)
+    // Check if title has changed, if so, invalidate the page list cache triggering a refresh of the sidebar tree
     if (page.currentTitle !== page.lastTitle) {
       await mutate(`${apiBaseUrl}/page`)
     }
+    // Dispatch a 'saved' action to update the state
     dispatch({
       type: 'saved'
     });
@@ -110,15 +127,18 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
   // Autosave editor content
   const AUTOSAVE_INTERVAL: number = 3000
   React.useEffect(() => {
-    if (!Boolean(id)) return
+    if (isNewPage) return
+    // Set up a timer to automatically save the page after a certain interval
     const timer = setTimeout(() => {
+      // Check if there are unsaved changes in the editor
       if (page.lastText !== page.currentText || page.lastTitle !== page.currentTitle) {
         console.log(`Autosaving... id ${id}`)
         savePage(id, page)
       }
     }, AUTOSAVE_INTERVAL)
+    // Clean up the timer when the component unmounts or the dependencies change
     return () => { clearTimeout(timer) }
-  }, [page, id])
+  }, [page, id, isNewPage])
 
   // Create editor
   const editor = useEditor({
@@ -150,11 +170,10 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
           </p>
         </div>
         <div className="flex gap-2 h-10 grow flex-row place-content-end">
-          <span title={!autosaveEnabled ? "Autosave disabled on new pages. Manually save your work" : page.unsavedChanges ? "Unsaved changes..." : "Saved"} className="mr-4">
-            <svg className={`py-3 px-2 ${!autosaveEnabled ? 'fill-red-500' : !page.unsavedChanges ? 'fill-primary-600' : 'fill-amber-500 animate-pulse'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" /></svg>
+          <span title={isNewPage ? "Autosave disabled on new pages. Manually save your work" : page.unsavedChanges ? "Unsaved changes..." : "Saved"} className="mr-4">
+            <svg className={`py-3 px-2 ${isNewPage ? 'fill-red-500' : !page.unsavedChanges ? 'fill-primary-600' : 'fill-amber-500 animate-pulse'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" /></svg>
           </span>
-          <Button color={buttonClasses} onClick={() => {if (autosaveEnabled) { savePage(id, page) } else createPage(page)}}><FaSave className="mr-2" /> Save</Button>
-          {/* <Button color="bg-red-500 hover:bg-red-700" onClick={() => setModalOpen(true)}><FaTrash className="mr-2" /> Delete</Button> */}
+          <Button color={buttonClasses} onClick={() => {if (!isNewPage) { savePage(id, page) } else createPage(page)}}><FaSave className="mr-2" /> Save</Button>
           <Menu as="div" className="relative inline-block text-left">
             <div>
               <Menu.Button className={`inline-flex w-full justify-center rounded-full p-3 ${buttonClasses}`} >
@@ -177,11 +196,29 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
                     {({ active }) => (
                       <a href="#" onClick={() => { setDisplayState({...displayState, modalOpen: true})}}
                         className={classNames(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm flex')}>
-                        <FaTrash className="mr-4" />
+                        <FaTrash className="my-1 mr-4" />
                         Delete Page
                       </a>
                     )}
                   </Menu.Item>
+                  {/* <Menu.Item>
+                    {({ active }) => (
+                      <a href="#" onClick={() => { }}
+                        className={classNames(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm flex')}>
+                        <FaRegFileAlt className="my-1 mr-4" />
+                        Export as HTML
+                      </a>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <a href="#" onClick={() => { }}
+                        className={classNames(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm flex')}>
+                        <FaMarkdown className="my-1 mr-4" />
+                        Export as Markdown
+                      </a>
+                    )}
+                  </Menu.Item> */}
                 </div>
               </Menu.Items>
             </Transition>

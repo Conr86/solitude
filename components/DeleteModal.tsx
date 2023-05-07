@@ -3,7 +3,6 @@ import { Modal } from '@alfiejones/flowbite-react';
 import { Button } from '../components/Button';
 import { FaTimes, FaTrash } from 'react-icons/fa';
 
-
 export function DeleteModal({ show, onConfirm, onCancel }: any): JSX.Element {
   return (<Modal show={show} size="md" popup={true} onClose={onCancel}>
     <Modal.Header />

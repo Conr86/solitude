@@ -4,7 +4,7 @@ import { Prisma } from 'prisma/prisma-client'
 /*
     Hacky modification of StaticTreeDataProvider that redraws the tree when the contents change.
 
-    onDidChangeTreeData is called automatically when data changes - we then tell it that all data has changed.
+    onDidChangeTreeData is called automatically when data changes - and we redraw the entire tree by telling the listener that every item has changed
 
     Might need to be optimised (to only redraw the actual items that have changed) but that would require knowing what items are changed
     Which is not something stored currently.
