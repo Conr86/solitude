@@ -3,23 +3,30 @@ import { NavLink } from './NavLink'
 import { FaPlus, FaFile, FaHome, FaExclamationTriangle, FaTimes, FaChevronRight, FaChevronDown } from 'react-icons/fa'
 import { useRouter } from 'next/router'
 import { type Page } from '@prisma/client'
-import { useState } from 'react'
-import { InteractionMode, StaticTreeDataProvider, Tree, UncontrolledTreeEnvironment } from 'react-complex-tree'
-import { treeify } from '@/helpers/Treeify'
+import { useMemo, useState } from 'react'
+import { InteractionMode, Tree, UncontrolledTreeEnvironment } from 'react-complex-tree'
 import { NavTreeLink } from './NavTreeLink'
 import { apiBaseUrl } from '@/helpers/apiSettings'
+import { CustomTreeDataProvider } from '@/helpers/CustomTreeDataProvider'
 
+// interface TreeSidebarProps {
+//     pageList: PageWithChildren[],
+// }
+
+//export default function TreeSidebar({pagesList} : TreeSidebarProps): JSX.Element {
 export default function TreeSidebar(): JSX.Element {
+    const router = useRouter()
     const [filterText, setFilterText] = useState('')
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const { data, error } = useSWR(`${apiBaseUrl}/page`)
-    const router = useRouter()
+
+    // Cache CustomTreeDataProvider until the data changes
+    // Data will automatically change if swr's mutate() is called on the /page endpoint
+    const dataProvider = useMemo(() => new CustomTreeDataProvider(data), [data])
 
     if (error) return <div>An error occured.</div>
 
     if (!data) return <div>Loading ...</div>
-
-    const dataProvider = new StaticTreeDataProvider(treeify(data))
 
     async function UpdateParent(id: number, parentConnectObj: any) {
         await fetch(`${apiBaseUrl}/page/${id}`, {
