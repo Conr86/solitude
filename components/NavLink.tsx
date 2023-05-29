@@ -1,8 +1,17 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { IconType } from 'react-icons';
 
-export const NavLink = ({ href, Icon, label, depth = 0, arrow = null }: any) => {
+interface NavLinkProps {
+  href: string | number,
+  Icon: IconType;
+  label: ReactNode;
+  depth?: number;
+  arrow?: ReactNode;
+}
+
+export const NavLink = ({ href, Icon, label, depth = 0, arrow = null}: NavLinkProps) => {
   const { asPath } = useRouter()
   return (
     <Link href={`/${href}`} className={`${asPath === `/${href}`
