@@ -15,7 +15,7 @@ export const NavLink = ({ href, Icon, label, depth = 0, arrow = null}: NavLinkPr
   const { asPath } = useRouter()
   return (
     <Link href={`/${href}`} className={`${asPath === `/${href}`
-    ? 'bg-primary-100 dark:text-white dark:bg-primary-800'
+    ? 'bg-primary-200 dark:text-white dark:bg-primary-800'
     : 'hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700'} 
         flex items-center w-full py-2 pl-${depth > 0 ? 2 + 4 * depth : '2'} pr-2 transition duration-75 rounded-lg group `}>
       <Icon className={`${asPath === `/${href}`
