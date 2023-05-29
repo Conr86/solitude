@@ -4,6 +4,7 @@ import useSWR from 'swr'
 import { apiBaseUrl } from '@/helpers/apiSettings'
 import Error from 'next/error'
 import Head from 'next/head'
+import { LoadingBox } from '@/components/LoadingBox'
 
 const Post = () => {
   const router = useRouter()
@@ -15,7 +16,7 @@ const Post = () => {
 
   if (error) return <Error statusCode={error.statusCode} />
 
-  if (!data) return <div>Loading ...</div>
+  if (!data) return LoadingBox();
 
   return (<>
     <Head>

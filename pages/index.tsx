@@ -5,11 +5,16 @@ import Head from 'next/head'
 import Link from 'next/link';
 import { Page } from 'prisma/prisma-client';
 import useSWR from 'swr'
+import { LoadingBox } from '@/components/LoadingBox';
+import Error from 'next/error'
 
-export default function Home() {
+export default function Home() : JSX.Element {
   const { data, error } = useSWR<Page[]>(`${apiBaseUrl}/page`);
   dayjs.extend(relativeTime);
-  if (!data) return <h1>error</h1>
+
+  if (error) return <Error statusCode={error.statusCode} />
+
+  if (!data) return LoadingBox();
 
   let pagesCount = data.length;
 

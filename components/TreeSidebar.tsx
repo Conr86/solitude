@@ -10,6 +10,7 @@ import { apiBaseUrl } from '@/helpers/apiSettings'
 import { CustomTreeDataProvider } from '@/helpers/CustomTreeDataProvider'
 import Image from 'next/image'
 import { proseFont } from '@/helpers/tiptap.config'
+import Error from 'next/error'
 // interface TreeSidebarProps {
 //     pageList: PageWithChildren[],
 // }
@@ -34,12 +35,16 @@ export default function TreeSidebar(): JSX.Element {
         }
     }, [dataProvider, pageId])
 
-    if (error) return <div>An error occured.</div>
+    if (error) return <Error statusCode={error.statusCode} />
 
     if (!data) return (
-        <div className="mb-4 flex h-screen w-full justify-center items-center">
-            <img className="mx-auto float-center w-1/2" src="logo.svg" alt="Solitude Logo" />
-        </div>
+        <aside id="sidebar-multi-level-sidebar" className={`${sidebarVisible ? "translate-x-0" : "-translate-x-full"} fixed top-0 left-0 z-40 w-64 h-screen transition-transform duration-300 ease-in-out`} aria-label="Sidebar">
+            <div className="h-full overflow-y-auto bg-secondary-100 dark:bg-secondary-800">
+                <div className="flex h-screen w-full justify-center items-center">
+                    <Image className="animate-pulse mx-auto float-center w-1/2 " src="logo.svg" alt="Solitude Logo" width={100} height={100}/>
+                </div>
+            </div>
+        </aside>
     )
 
     return (
@@ -53,7 +58,7 @@ export default function TreeSidebar(): JSX.Element {
                     {/* Header Logo */}
 
                     <div className="mb-4 flex items-center py-2 my-1">
-                        <Image className="h-8 w-8 mx-2 mr-4" src="logo.svg" alt="Solitude Logo" width={64} height={64}/>
+                        <Image className="h-8 w-8 mx-2 mr-4" src="logo.svg" alt="Solitude Logo" width={64} height={64} />
                         <h1 className={`${proseFont.className} font-bold break-normal text-gray-900 dark:text-white  text-2xl md:text-3xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`}>Solitude</h1>
                     </div>
                     {/* Home & New Page */}
@@ -65,6 +70,18 @@ export default function TreeSidebar(): JSX.Element {
                             <NavLink href="new" Icon={FaPlus} label="New Page" />
                         </li>
                     </ul>
+                    {/* New Page warning */}
+                    {router.asPath === '/new' &&
+                        <div id="dropdown-cta" className="p-4 mt-6 rounded-lg bg-yellow-100 dark:bg-red-800" role="alert">
+                            <div className="flex items-center mb-3 text-orange-900">
+                                <span className="flex bg-orange-300  text-sm font-semibold mr-2 px-4 py-1 rounded dark:bg-orange-200 dark:text-orange-900">
+                                    <FaExclamationTriangle className="mr-2 my-0.5" />Warning</span>
+                            </div>
+                            <p className="mb-3 text-sm text-gray-700 dark:text-white">
+                                You&apos;re currently working on an unsaved draft. Make sure to press the save button if you want to keep your work.
+                            </p>
+                        </div>
+                    }
                     {/* Search */}
                     <ul className="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
                         <div className="flex items-center mb-2">
@@ -116,17 +133,6 @@ export default function TreeSidebar(): JSX.Element {
                         >
                             <Tree treeId="tree-nav" rootItem="root" treeLabel="Tree Sidebar" />
                         </UncontrolledTreeEnvironment>
-                    }
-                    {router.asPath === '/new' &&
-                        <div id="dropdown-cta" className="p-4 mt-6 rounded-lg bg-yellow-100 dark:bg-red-800" role="alert">
-                            <div className="flex items-center mb-3 text-orange-900">
-                                <span className="flex bg-orange-300  text-sm font-semibold mr-2 px-4 py-1 rounded dark:bg-orange-200 dark:text-orange-900">
-                                    <FaExclamationTriangle className="mr-2 my-0.5" />Warning</span>
-                            </div>
-                            <p className="mb-3 text-sm text-gray-700 dark:text-white">
-                                You&apos;re currently working on an unsaved draft. Make sure to press the save button if you want to keep your work.
-                            </p>
-                        </div>
                     }
                 </div>
             </aside>

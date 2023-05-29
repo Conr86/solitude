@@ -15,6 +15,7 @@ import { DeleteModal } from './DeleteModal'
 import { apiBaseUrl } from '@/helpers/apiSettings'
 import { PageState, pageStateReducer }  from '@/helpers/pageStateReducer';
 import { createItems, getEditorProps, getExtensions, proseFont } from '@/helpers/tiptap.config'
+import { LoadingBox } from './LoadingBox'
 
 // Delete a page with the given ID
 async function deletePage(id: number): Promise<void> {
@@ -151,7 +152,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
       newTitle: undefined
     })
   }, [id])
-
+  
   const buttonClasses = 'bg-primary-100 hover:bg-primary-400 dark:bg-transparent dark:hover:bg-primary-900 dark:ring-primary-800 dark:ring-1 dark:hover:ring-primary-900 dark:text-white'
 
   return (

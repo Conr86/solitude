@@ -11,7 +11,7 @@ interface NavLinkProps {
   arrow?: ReactNode;
 }
 
-export const NavLink = ({ href, Icon, label, depth = 0, arrow = null}: NavLinkProps) => {
+export const NavLink = ({ href, Icon, label, depth = 0, arrow = null}: NavLinkProps) : JSX.Element => {
   const { asPath } = useRouter()
   return (
     <Link href={`/${href}`} className={`${asPath === `/${href}`
@@ -26,4 +26,4 @@ export const NavLink = ({ href, Icon, label, depth = 0, arrow = null}: NavLinkPr
       {arrow && <span className="pr-1">{arrow}</span>}
     </Link>
   )
-}
+} 
