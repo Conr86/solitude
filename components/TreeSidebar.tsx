@@ -115,7 +115,9 @@ export default function TreeSidebar(): JSX.Element {
                             canDragAndDrop={true}
                             canDropOnFolder={true}
                             canDropOnNonFolder={true}
+                            canRename={false}
                             canReorderItems={true}
+                            canSearch={false}
                             onDrop={async (items, target) => {
                                 if (target.targetType !== "root") {
                                     let targetId = target.targetType === "between-items" ? target.parentItem : target.targetItem;
