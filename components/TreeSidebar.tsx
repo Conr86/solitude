@@ -4,11 +4,12 @@ import { FaPlus, FaFile, FaHome, FaExclamationTriangle, FaTimes, FaChevronRight,
 import { useRouter } from 'next/router'
 import { type Page } from '@prisma/client'
 import { useMemo, useState } from 'react'
-import { InteractionMode, Tree, UncontrolledTreeEnvironment } from 'react-complex-tree'
+import { InteractionMode, Tree, TreeItemIndex, UncontrolledTreeEnvironment } from 'react-complex-tree'
 import { NavTreeLink } from './NavTreeLink'
 import { apiBaseUrl } from '@/helpers/apiSettings'
 import { CustomTreeDataProvider } from '@/helpers/CustomTreeDataProvider'
-
+import Image from 'next/image'
+import { proseFont } from '@/helpers/tiptap.config'
 // interface TreeSidebarProps {
 //     pageList: PageWithChildren[],
 // }
@@ -18,27 +19,28 @@ export default function TreeSidebar(): JSX.Element {
     const router = useRouter()
     const [filterText, setFilterText] = useState('')
     const [sidebarVisible, setSidebarVisible] = useState(true);
-    const { data, error } = useSWR(`${apiBaseUrl}/page`)
+    const { data, error, mutate } = useSWR(`${apiBaseUrl}/page`, null, { keepPreviousData: true });
 
-    // Cache CustomTreeDataProvider until the data changes
+    // Cache CustomTreeDataProvider until the data changes, prevents recreating whenever use selects page
     // Data will automatically change if swr's mutate() is called on the /page endpoint
-    const dataProvider = useMemo(() => new CustomTreeDataProvider(data), [data])
+    const dataProvider = useMemo(() => new CustomTreeDataProvider(data, mutate), [data, mutate])
+
+    // Generate initial state of tree by creating linear path from active item to root
+    let pageId: number = Number(router.asPath.slice(1));
+    let initialState = useMemo(() => isNaN(pageId) ? {} : {
+        ['tree-nav']: {
+            activeItems: pageId,
+            expandedItems: dataProvider.getLinearPathToRoot(pageId)
+        }
+    }, [dataProvider, pageId])
 
     if (error) return <div>An error occured.</div>
 
-    if (!data) return <div>Loading ...</div>
-
-    async function UpdateParent(id: number, parentConnectObj: any) {
-        await fetch(`${apiBaseUrl}/page/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                parent: parentConnectObj
-            })
-        })
-    }
+    if (!data) return (
+        <div className="mb-4 flex h-screen w-full justify-center items-center">
+            <img className="mx-auto float-center w-1/2" src="logo.svg" alt="Solitude Logo" />
+        </div>
+    )
 
     return (
         <div>
@@ -48,6 +50,13 @@ export default function TreeSidebar(): JSX.Element {
                     <FaChevronRight className={`${sidebarVisible ? "rotate-180" : ""} transition ease-in-out duration-300`} />
                 </button>
                 <div className="h-full px-3 py-4 overflow-y-auto bg-secondary-100 dark:bg-secondary-800">
+                    {/* Header Logo */}
+
+                    <div className="mb-4 flex items-center py-2 my-1">
+                        <Image className="h-8 w-8 mx-2 mr-4" src="logo.svg" alt="Solitude Logo" width={64} height={64}/>
+                        <h1 className={`${proseFont.className} font-bold break-normal text-gray-900 dark:text-white  text-2xl md:text-3xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`}>Solitude</h1>
+                    </div>
+                    {/* Home & New Page */}
                     <ul className="space-y-2 font-medium">
                         <li>
                             <NavLink href="" Icon={FaHome} label="Home" />
@@ -84,42 +93,28 @@ export default function TreeSidebar(): JSX.Element {
                         <UncontrolledTreeEnvironment
                             dataProvider={dataProvider}
                             getItemTitle={item => item.data.title}
-                            viewState={{}}
+                            // getItemTitle={item => `${item.data.id}: ${item.data.title.slice(0, 10)} (${item.data.order})`}
+                            viewState={initialState}
                             canDragAndDrop={true}
                             canDropOnFolder={true}
                             canDropOnNonFolder={true}
                             canReorderItems={true}
                             onDrop={async (items, target) => {
-                                if (target.targetType === "between-items") {
-                                    if (target.depth == 0) {
-                                        console.log(`Attempting to move page to root`);
-                                        await UpdateParent(items[0].data.id, {
-                                            disconnect: true,
-                                        })
-                                    } else {
-                                        console.log(`Attempting to child page to ${target.parentItem}`);
-                                        await UpdateParent(items[0].data.id, {
-                                            connect: {
-                                                id: target.parentItem
-                                            },
-                                        })
-                                    }
-                                }
-                                else if (target.targetType === "item") {
-                                    console.log(`Attempting to child page to ${target.targetItem}`);
-                                    await UpdateParent(items[0].data.id, {
-                                        connect: {
-                                            id: target.targetItem
-                                        },
-                                    })
+                                if (target.targetType !== "root") {
+                                    let targetId = target.targetType === "between-items" ? target.parentItem : target.targetItem;
+                                    console.log(`Attempting to child page ${items[0].data.id} to ${targetId}`);
+                                    await dataProvider.updateParent(
+                                        items[0].data.id,
+                                        (target.targetType === "between-items" && target.parentItem === 'root') ? { disconnect: true } : { connect: { id: targetId } }
+                                    );
                                 }
                             }}
                             defaultInteractionMode={InteractionMode.ClickArrowToExpand}
                             renderItemsContainer={({ children, containerProps }) => <ul {...containerProps}>{children}</ul>}
                             renderItemArrow={({ item, context }) => <span {...context.arrowProps} >{item.children?.length != 0 ? context.isExpanded ? <FaChevronDown /> : <FaChevronRight /> : null}</span>}
-                            renderItem={(props) => <NavTreeLink Icon={FaFile} {...props} />}
+                            renderItem={(props) => <NavTreeLink {...props} />}
                         >
-                            <Tree treeId="tree-2" rootItem="root" treeLabel="Tree Example" />
+                            <Tree treeId="tree-nav" rootItem="root" treeLabel="Tree Sidebar" />
                         </UncontrolledTreeEnvironment>
                     }
                     {router.asPath === '/new' &&
@@ -127,10 +122,6 @@ export default function TreeSidebar(): JSX.Element {
                             <div className="flex items-center mb-3 text-orange-900">
                                 <span className="flex bg-orange-300  text-sm font-semibold mr-2 px-4 py-1 rounded dark:bg-orange-200 dark:text-orange-900">
                                     <FaExclamationTriangle className="mr-2 my-0.5" />Warning</span>
-                                {/* <button type="button" className="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1 dark:text-white hover:bg-orange-300 dark:hover:bg-red-700 inline-flex h-6 w-6" data-dismiss-target="#dropdown-cta" aria-label="Close">
-                                    <span className="sr-only">Close</span>
-                                    <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                                </button> */}
                             </div>
                             <p className="mb-3 text-sm text-gray-700 dark:text-white">
                                 You&apos;re currently working on an unsaved draft. Make sure to press the save button if you want to keep your work.
