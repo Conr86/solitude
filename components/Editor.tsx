@@ -164,7 +164,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
           <p>Created {createdAt ? new Date(createdAt).toLocaleString() : 'just now'}</p>
           {/* <p className="text-sm md:text-base font-normal text-gray-600 dark:text-gray-400">Modified {updatedAt ? new Date(updatedAt).toLocaleString() : "just now"}</p> */}
           <p>
-            {page.lastSaved ? `Last saved ${dayjs().from(dayjs(page.lastSaved), true)} ago` : `Unsaved draft...`}
+            {!isNewPage ? `Last saved ${dayjs().from(dayjs(page.lastSaved), true)} ago` : `Unsaved draft...`}
           </p>
           <p>
             {editor?.storage.characterCount.words()} words

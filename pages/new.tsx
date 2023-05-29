@@ -6,7 +6,7 @@ const NewPage = () => {
         <Head>
             <title>New Page - Solitude</title>
         </Head>
-        <Editor title={"New Page"} content={""} createdAt={new Date()} id={0} updatedAt={null} parentId={null} />
+        <Editor title={"New Page"} content={""} createdAt={new Date()} id={0} updatedAt={new Date()} parentId={null} order={null}/>
     </>
     );
 };
