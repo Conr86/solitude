@@ -6,6 +6,7 @@ export interface Item {
   title?: string;
   action?: () => boolean | void;
   isActive?: () => boolean;
+  divider?: boolean;
 }
 
 const ToolbarItem = ({ Icon, title, action, isActive } : Item) => (

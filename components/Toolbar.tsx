@@ -7,8 +7,6 @@ import {
     RiBold,
     RiItalic,
     RiStrikethrough,
-    RiCodeSSlashLine,
-    RiEmotionLine,
     RiH1,
     RiH2,
     RiH3,
@@ -18,7 +16,6 @@ import {
     RiParagraph,
     RiListOrdered,
     RiListUnordered,
-    RiCodeBoxLine,
     RiLink,
     RiLinkUnlink,
     RiDoubleQuotesL,
@@ -67,7 +64,7 @@ function Toolbar({ editor }: ToolbarProps) {
             isActive: () => editor.isActive('strike'),
         },
         {
-            type: 'divider',
+            divider: true,
         },
         {
             Icon: RiH1,
@@ -106,7 +103,7 @@ function Toolbar({ editor }: ToolbarProps) {
             isActive: () => editor.isActive('orderedList'),
         },
         {
-            type: 'divider',
+            divider: true,
         },
         {
             Icon: RiDoubleQuotesL,
@@ -120,7 +117,7 @@ function Toolbar({ editor }: ToolbarProps) {
             action: () => editor.chain().focus().setHorizontalRule().run(),
         },
         {
-            type: 'divider',
+            divider: true,
         },
         {
             Icon: RiFormatClear,
@@ -134,7 +131,7 @@ function Toolbar({ editor }: ToolbarProps) {
             action: () => setLink(editor),
         },
         {
-            type: 'divider',
+            divider: true,
         },
         {
             Icon: RiArrowGoBackLine,
@@ -153,7 +150,7 @@ function Toolbar({ editor }: ToolbarProps) {
             <div className="flex space-x-1">
                 {items.map((item, index) => (
                     <Fragment key={index}>
-                        {item.type === 'divider' ? <div className="border-r border-primary-200 dark:border-primary-700" /> : <MenuItem {...item} />}
+                        {item.divider ? <div className="border-r border-primary-200 dark:border-primary-700" /> : <MenuItem {...item} />}
                     </Fragment>
                 ))}
             </div>
