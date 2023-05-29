@@ -24,10 +24,9 @@ A minimalist web-app for focused writing and note-taking. Currently in early sta
 - Exporting of items as Markdown or HTML
 - Manual toggling of light/dark mode
 - Basic authentication
-- Workspace overview (such as 'recently edited') and insights on the Home page
+- Basic insights on the Home page such as number of pages or total word count
 
 ### Bugs
-- Ordering is not preserved in the sidebar page tree
 - @mention tags currently don't change when the linked page name changes
 - I'm using a README to track bugs
 
