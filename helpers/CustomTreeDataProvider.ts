@@ -67,21 +67,16 @@ export class CustomTreeDataProvider implements TreeDataProvider {
 
     public async onChangeItemChildren(itemId: TreeItemIndex, newChildren: TreeItemIndex[]): Promise<void> {
         this.data[itemId].children = newChildren;
-
         console.log(`Item ${itemId} children changed, with new children: ` + newChildren.toString())
-        let promises = []
-        for (let i = 0; i < newChildren.length; i++) {
-            promises.push(fetch(`${apiBaseUrl}/page/${newChildren[i]}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    order: i
-                })
-            }))
-        }
-        await Promise.allSettled(promises);
+        await fetch(`${apiBaseUrl}/page/reorder`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                newChildren.map((c: TreeItemIndex, i: number) => {return {id: c, order: i}})
+            )
+        });
         this.mutate();
     }
     public async getTreeItem(itemId: TreeItemIndex): Promise<TreeItem> {
