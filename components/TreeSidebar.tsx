@@ -11,16 +11,12 @@ import { CustomTreeDataProvider } from '@/helpers/CustomTreeDataProvider'
 import Image from 'next/image'
 import { proseFont } from '@/helpers/tiptap.config'
 import Error from 'next/error'
-// interface TreeSidebarProps {
-//     pageList: PageWithChildren[],
-// }
 
-//export default function TreeSidebar({pagesList} : TreeSidebarProps): JSX.Element {
 export default function TreeSidebar(): JSX.Element {
     const router = useRouter()
     const [filterText, setFilterText] = useState('')
     const [sidebarVisible, setSidebarVisible] = useState(true);
-    const { data, error, mutate } = useSWR(`${apiBaseUrl}/page`, null, { keepPreviousData: true });
+    const { data, error, mutate } = useSWR(`${apiBaseUrl}/page`, null, { keepPreviousData: false });
 
     // Cache CustomTreeDataProvider until the data changes, prevents recreating whenever use selects page
     // Data will automatically change if swr's mutate() is called on the /page endpoint
@@ -49,15 +45,14 @@ export default function TreeSidebar(): JSX.Element {
 
     return (
         <div>
-            <aside id="sidebar-multi-level-sidebar" className={`${sidebarVisible ? "translate-x-0" : "-translate-x-full"} fixed top-0 left-0 z-40 w-64 h-screen transition-transform duration-300 ease-in-out`} aria-label="Sidebar">
+            <aside id="sidebar-multi-level-sidebar" className={`${sidebarVisible ? "translate-x-0" : "-translate-x-full"} fixed top-0 left-0 z-40 w-1/6 h-screen transition-transform duration-300 ease-in-out`} aria-label="Sidebar">
                 <button onClick={() => setSidebarVisible(!sidebarVisible)}
                     className={`absolute bottom-2 -right-14 hover:bg-gray-200 text-gray-500 dark:hover:text-gray-400 dark:hover:bg-gray-700 flex items-center p-4 rounded-lg group`}>
                     <FaChevronRight className={`${sidebarVisible ? "rotate-180" : ""} transition ease-in-out duration-300`} />
                 </button>
                 <div className="h-full px-3 py-4 overflow-y-auto bg-secondary-100 dark:bg-secondary-800">
                     {/* Header Logo */}
-
-                    <div className="mb-4 flex items-center py-2 my-1">
+                    <div className="mb-4 flex items-center py-2">
                         <Image className="h-8 w-8 mx-2 mr-4" src="logo.svg" alt="Solitude Logo" width={64} height={64} />
                         <h1 className={`${proseFont.className} font-bold break-normal text-gray-900 dark:text-white  text-2xl md:text-3xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`}>Solitude</h1>
                     </div>

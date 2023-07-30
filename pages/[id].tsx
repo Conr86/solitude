@@ -6,13 +6,13 @@ import Error from 'next/error'
 import Head from 'next/head'
 import { LoadingBox } from '@/components/LoadingBox'
 
-const Post = () => {
+const Page = () => {
   const router = useRouter()
   const id = router.query.id
 
   const { data, error } = useSWR(`${apiBaseUrl}/page/${id}`)
 
-  const post = data
+  const page = data
 
   if (error) return <Error statusCode={error.statusCode} />
 
@@ -20,10 +20,10 @@ const Post = () => {
 
   return (<>
     <Head>
-      <title>{post.title} - Solitude</title>
+      <title>{page.title} - Solitude</title>
     </Head>
-    <Editor {...post} />
+    <Editor {...page} />
   </>)
 }
 
-export default Post
+export default Page
