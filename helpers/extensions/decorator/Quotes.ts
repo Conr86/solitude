@@ -16,7 +16,7 @@ export class Quotes extends DecoratorPlugin {
         this.record(
           position + startIndex,
           position + startIndex + match.length,
-          'text-secondary-500 dark:text-emerald-400 tracking-tight '
+          'text-secondary-500 dark:text-primary-400 tracking-tight '
         )
       }
     })
