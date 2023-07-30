@@ -1,11 +1,13 @@
 import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
 
-import MentionList from '../components/MentionList.jsx'
+import MentionList from '../../../components/MentionSuggestionList'
+import { NameUrlPair } from '@/helpers/tiptap.config'
+import { SuggestionOptions } from '@tiptap/suggestion'
 
-export const renderMentionSuggestion = () => {
-  let component
-  let popup
+export const MentionSuggestionRender: SuggestionOptions<NameUrlPair>['render'] = () => {
+  let component: ReactRenderer
+  let popup: any
 
   return {
     onStart: props => {
@@ -18,6 +20,7 @@ export const renderMentionSuggestion = () => {
         return
       }
 
+      // @ts-ignore
       popup = tippy('body', {
         getReferenceClientRect: props.clientRect,
         appendTo: () => document.body,
@@ -48,6 +51,7 @@ export const renderMentionSuggestion = () => {
         return true
       }
 
+      // @ts-ignore
       return component.ref?.onKeyDown(props)
     },
 

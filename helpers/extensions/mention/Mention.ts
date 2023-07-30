@@ -4,7 +4,7 @@ import { PluginKey } from '@tiptap/pm/state'
 import Suggestion, { SuggestionOptions } from '@tiptap/suggestion'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 
-import MentionLink from '../components/MentionLink'
+import MentionLink from '../../../components/MentionLink'
 
 export type MentionOptions = {
     HTMLAttributes: Record<string, any>
@@ -27,7 +27,6 @@ export const Mention = Node.create<MentionOptions>({
                 char: '@',
                 pluginKey: MentionPluginKey,
                 command: ({ editor, range, props }) => {
-                    console.log(props)
                     // increase range.to by one when the next node is of type "text"
                     // and starts with a space character
                     const nodeAfter = editor.view.state.selection.$to.nodeAfter
@@ -108,14 +107,14 @@ export const Mention = Node.create<MentionOptions>({
     parseHTML() {
         return [
             {
-                tag: 'mention-component',
+                tag: 'mention',
                 // tag: `a[data-type="${this.name}"]`,
             },
         ]
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['mention-component', mergeAttributes(HTMLAttributes)]
+        return ['mention', mergeAttributes(HTMLAttributes)]
     },
 
     addNodeView() {

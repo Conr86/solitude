@@ -26,7 +26,7 @@ import {
     RiArrowGoForwardLine,
 } from 'react-icons/ri'
 
-import { setLink } from '../helpers/set-link'
+import { setLink } from '../helpers/extensions/setLink'
 
 type ToolbarProps = {
     editor: Editor | null
@@ -34,7 +34,7 @@ type ToolbarProps = {
 
 function Toolbar({ editor }: ToolbarProps) {
     const { observe, inView } = useInView({
-        rootMargin: '-1px 0px 0px 0px',
+        rootMargin: '-100px 0px 0px 0px',
         threshold: [1],
     })
 
@@ -146,7 +146,7 @@ function Toolbar({ editor }: ToolbarProps) {
     ]
 
     return (
-        <div className={"flex justify-center items-center p-2 -mx-10 my-6 top-0 z-10 bg-primary-100 dark:bg-primary-800 dark:text-white rounded-full " + classNames({ sticky: !inView })} ref={observe}>
+        <div className={"flex justify-center items-center p-2 -mx-10 my-6 top-4 z-10 bg-primary-100 dark:bg-primary-800 dark:text-white rounded-full " + classNames({ sticky: !inView })} ref={observe}>
             <div className="flex space-x-1">
                 {items.map((item, index) => (
                     <Fragment key={index}>

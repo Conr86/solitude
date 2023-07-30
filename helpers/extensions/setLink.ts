@@ -1,5 +1,7 @@
 import { Editor } from '@tiptap/react'
 
+// TODO: convert into TSX modal component
+
 function setLink(editor: Editor) {
     const previousUrl = editor.getAttributes('link').href
     const url = window.prompt('URL', previousUrl)

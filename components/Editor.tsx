@@ -1,7 +1,7 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import React, { useEffect, useState, Fragment, useReducer } from 'react'
 import { Toolbar } from './Toolbar'
-import router from 'next/router'
+import router, { useRouter } from 'next/router'
 import { Button } from '../components/Button'
 import useSWR, { mutate } from 'swr'
 import { FaAngleUp, FaCog, FaMarkdown, FaRegFileAlt, FaSave, FaTrash } from 'react-icons/fa'
@@ -14,7 +14,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { DeleteModal } from './DeleteModal'
 import { apiBaseUrl } from '@/helpers/apiSettings'
 import { PageState, pageStateReducer }  from '@/helpers/pageStateReducer';
-import { createItems, getEditorProps, getExtensions, proseFont } from '@/helpers/tiptap.config'
+import { itemsSearchFilter, getEditorProps, getExtensions, proseFont } from '@/helpers/tiptap.config'
 import { LoadingBox } from './LoadingBox'
 
 // Delete a page with the given ID
@@ -127,7 +127,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
 
   // Autosave editor content
   const AUTOSAVE_INTERVAL: number = 3000
-  React.useEffect(() => {
+  useEffect(() => {
     if (isNewPage) return
     // Set up a timer to automatically save the page after a certain interval
     const timer = setTimeout(() => {
@@ -141,22 +141,39 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
     return () => { clearTimeout(timer) }
   }, [page, id, isNewPage])
 
+  // Save on exit
+  const router = useRouter()
+  useEffect(() => {
+    const handleRouteChange = () => {
+      console.log("IT IS CHANGING")
+      if (page.lastText !== page.currentText || page.lastTitle !== page.currentTitle) {
+        console.log("Saving unsaved changes...")
+        savePage(id, page)
+      }
+    }
+    router.events.on('routeChangeStart', handleRouteChange)
+    // If the component is unmounted, unsubscribe
+    // from the event with the `off` method:
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange)
+    }
+  }, [id, page, router])
+
   // Create editor
   const editor = useEditor({
-    extensions: getExtensions((!error && data) ? createItems(data) : undefined),
+    extensions: getExtensions(data),
     editorProps: getEditorProps(),
     content,
     onUpdate: ({ editor }) => dispatch({
       type: 'changed',
-      newText: editor.getHTML(),
-      newTitle: undefined
+      newText: editor.getHTML()
     })
   }, [id])
   
   const buttonClasses = 'bg-primary-100 hover:bg-primary-400 dark:bg-transparent dark:hover:bg-primary-900 dark:ring-primary-800 dark:ring-1 dark:hover:ring-primary-900 dark:text-white'
 
   return (
-    <div className="px-4 md:px-6">
+    <div className="px-4 md:px-6 pb-4 border-gray-200 dark:border-gray-700 border-b-2">
       <input type="text" value={page.currentTitle} onChange={e => { dispatch({type: 'changed', newText: undefined, newTitle: e.target.value}) }}
         className={`${proseFont.className} font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-1 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`} ></input>
       <div className="flex gap-2 flex-row">

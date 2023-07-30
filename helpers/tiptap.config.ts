@@ -4,41 +4,35 @@ import Link from '@tiptap/extension-link'
 import CharacterCount from '@tiptap/extension-character-count'
 import Focus from '@tiptap/extension-focus'
 import Typography from '@tiptap/extension-typography'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 import { Libre_Baskerville } from 'next/font/google'
-import { Mention } from '../helpers/Mention'
-import { renderMentionSuggestion } from './renderMentionSuggestion'
+import { Mention } from './extensions/mention/Mention'
+import { MentionSuggestionRender } from './extensions/mention/MentionSuggestionRender'
 import { Page } from 'prisma/prisma-client'
+import { Decorator } from './extensions/decorator/Decorator'
+import { Quotes } from './extensions/decorator/Quotes'
+
+export interface NameUrlPair {
+    name: string
+    url: number
+}
+
+const itemsSearchFilter = (pages: Page[]): (({query}: {query: string}) => NameUrlPair[]) => 
+    ({query}: {query: string}) => 
+        pages.map(e => 
+            ({name: e.title, url: e.id})).filter((item: NameUrlPair) => item.name.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5)
 
 export const proseFont = Libre_Baskerville({
     weight: ['400', '700'],
     subsets: ['latin']
 })
 
-interface NameUrlPair {
-    name: string
-    url: number
-  }
-
-export const createItems = (pages: Page[]) => {
-    let v : NameUrlPair[] = [];
-    pages.forEach(e => {
-        v.push({name: e.title, url: e.id});
-    });
-    let items = ({ query } : any) => {
-        return v
-          .filter((item : NameUrlPair) => item.name.toLowerCase().startsWith(query.toLowerCase()))
-          .slice(0, 5)
-      }
-    return items;
-  }
-
-export const getExtensions = (items: any) => [
+export const getExtensions = (pages: Page[] | undefined) => [
     StarterKit.configure({
-        paragraph: {
-            HTMLAttributes: {
-                class: 'py-1 px-4 -mx-4 rounded-md',
-            },
-        },
+        codeBlock: false,
     }),
     Link.configure({
         linkOnPaste: true,
@@ -48,21 +42,38 @@ export const getExtensions = (items: any) => [
             title: ''
         }
     }),
+    Table.configure({
+        resizable: true,
+      }),
+    TableRow,
+    TableHeader,
+    TableCell,
     Typography,
     CharacterCount,
     Mention.configure({
         suggestion: {
-            render: renderMentionSuggestion,
-            items
+            render: MentionSuggestionRender,
+            items: pages ? itemsSearchFilter(pages) : undefined
         }
     }),
     Focus.configure({
-      className: 'text-gray-950 dark:text-gray-300',
-      // bg-gray-100 dark:bg-primary-950
+        mode: 'shallowest',
+        className: 'border-solid border-l -ml-[17px] pl-4 border-gray-950 dark:border-gray-300 text-gray-950 dark:text-gray-300',
+    }),
+    Decorator.configure({
+        plugins: [
+            Quotes,
+        ],
     }),
 ]
-export const getEditorProps = () => { return {
-    attributes: {
-        class: `${proseFont.className} prose dark:prose-invert prose-sm sm:prose-base lg:prose-md xl:prose-lg focus:outline-none max-w-none text-gray-600 dark:text-gray-400`
+export const getEditorProps = () => {
+    return {
+        attributes: {
+            class: `${proseFont.className} -ml-4 prose dark:prose-invert \
+        prose-sm sm:prose-base lg:prose-md xl:prose-lg \
+        prose-h1:text-4xl prose-h2:text-2xl prose-h3:text-xl \
+        focus:outline-none max-w-none \
+        text-gray-600 dark:text-gray-400`
+        }
     }
-}}
+}
