@@ -23,18 +23,32 @@ class PageHandler {
     })
   }
 
-  // PUT /api/pages/ (update many)
-  @Put()
-  @HttpCode(201)
-  async updateManyPages(@Param('id') id: string, @Body() body: any) {
-    let { whereQ, dataQ } = body;
+  // PUT /api/page/ (update many)
+  // @Put()
+  // @HttpCode(201)
+  // async updateManyPages(@Body() body: any) {
+  //   let { whereQ, dataQ } = body;
 
-    // Update multiple pages in your database
-    const page = await prisma.page.updateMany({
-      where: whereQ,
-      data: dataQ,
-    });
-    return page;
+  //   // Update multiple pages in your database
+  //   const page = await prisma.page.updateMany({
+  //     where: whereQ,
+  //     data: dataQ,
+  //   });
+  //   return page;
+  // }
+
+  // PUT /api/page/reorder (reorder a list of pages orders)
+  @Put('/reorder')
+  async bulkUpdateOrderPages(@Body() body: Page[]) {
+    let result = await prisma.$transaction(
+      body.map((page: Page) => {
+        return prisma.page.update({
+          where: { id: page.id },
+          data: { order: page.order}
+        })
+      }
+    ))
+    return result;
   }
 
   // GET /api/page/:id
