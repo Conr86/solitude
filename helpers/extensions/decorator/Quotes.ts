@@ -5,23 +5,18 @@ export class Quotes extends DecoratorPlugin {
 
   scan() {
     this.doc.descendants((node, position) => {
-      if (!node.isText) {
+      if (!node.isText || !node.text) {
         return
       }
 
-      if (!node.text) {
-        return
-      }
-
-      let matches;
+      let matches : RegExpExecArray | null;
       while ((matches = this.regex.exec(node.text)) !== null) {
         const match = matches[0];
         const startIndex = matches.index;
         this.record(
-          'Quotes',
           position + startIndex,
           position + startIndex + match.length,
-          'text-secondary-500 dark:text-primary-200  tracking-tight '
+          'text-secondary-500 dark:text-emerald-400 tracking-tight '
         )
       }
     })

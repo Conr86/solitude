@@ -1,7 +1,6 @@
 import { Node as ProsemirrorNode } from '@tiptap/pm/model'
 
 export interface Result {
-  message: string
   from: number
   to: number
   className: string
@@ -16,9 +15,8 @@ export default class DecoratorPlugin {
     this.doc = doc
   }
 
-  record(message: string, from: number, to: number, className: string) {
+  record(from: number, to: number, className: string) {
     this.results.push({
-      message,
       from,
       to,
       className,
