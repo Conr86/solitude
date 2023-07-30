@@ -10,14 +10,14 @@ A minimalist web-app for focused writing and note-taking. Currently in early sta
 - Rich (but constrained) text editing
     - Headings, bold, italics, lists, links, blockquotes etc.
     - Markdown shortcuts e.g. #Heading, \*\*emphasis\*\* are supported
-    - @mention other pages to create links
+    - @mention other pages to create dynamic links
 - Autosaving with save status and 'last updated' indicators
 - Tree structure for pages, similar to Notion
 - Search for pages from the sidebar
 - Word count
 - Attractive UI including light and dark mode based on system setting
 
-### Coming very soon
+### On the roadmap
 - Workspaces or projects, letting you have multiple collections of pages
 - Embedded images
 - Offline support, including syncing
@@ -25,9 +25,11 @@ A minimalist web-app for focused writing and note-taking. Currently in early sta
 - Manual toggling of light/dark mode
 - Basic authentication
 - Basic insights on the Home page such as number of pages or total word count
+- Backups and revision control
 
 ### Bugs
-- @mention tags currently don't change when the linked page name changes
+- ~~Ordering is not preserved in the sidebar page tree~~
+- ~~@mention tags currently don't change when the linked page name changes~~
 - I'm using a README to track bugs
 
 ## Uses
