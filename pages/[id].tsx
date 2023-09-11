@@ -10,13 +10,11 @@ const Page = () => {
   const router = useRouter()
   const id = router.query.id
 
-  const { data, error } = useSWR(`${apiBaseUrl}/page/${id}`)
-
-  const page = data
+  const { data: page, error } = useSWR(`${apiBaseUrl}/page/${id}`)
 
   if (error) return <Error statusCode={error.statusCode} />
 
-  if (!data) return LoadingBox();
+  if (!page) return LoadingBox();
 
   return (<>
     <Head>

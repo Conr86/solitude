@@ -1,7 +1,7 @@
 import prisma from "@/helpers/prisma";
 import type { Page } from "@prisma/client";
-
-import { Body, createHandler, Delete, Get, HttpCode, Param, Put, Post } from 'next-api-decorators';
+import { NodeHtmlMarkdown, NodeHtmlMarkdownOptions, TranslatorConfig, TranslatorConfigObject } from 'node-html-markdown';
+import { Body, createHandler, Delete, Get, HttpCode, Param, Put, Post, Download } from 'next-api-decorators';
 
 class PageHandler {
   // GET /api/pages (read many)
@@ -59,6 +59,42 @@ class PageHandler {
       where: { id: parseInt(id) },
     });
     return page;
+  }
+
+  // GET /api/page/:id/export to markdown
+  @Get('/:id/export')
+  @Download()
+  async exportPage(@Param('id') id: string) {
+    // Get data from your database
+    const page = await prisma.page.findUnique({
+      where: { id: parseInt(id) },
+    });
+    const header = `---\n` +
+    `id: ${page?.id}\n` +
+    `title: ${page?.title}\n` +
+    `created: ${page?.createdAt.toISOString()}\n` +
+    `updated: ${page?.updatedAt.toISOString()}\n` +
+    `---\n\n`;
+    const customTranslator: TranslatorConfigObject = {
+      'mention': ({ node }) => {
+        const name = node.getAttribute('data-name');
+        const url = node.getAttribute('data-url');
+        if (!name || !url) return {};
+
+        return {
+          content: name,
+          prefix: '[',
+          postfix: ']' + `(/${url})`,
+          recurse: false,
+          preserveIfEmpty: true,
+        }
+      },
+    }
+    return {
+      filename: page?.title + ".md" ?? "Export.md",
+      contents: header + NodeHtmlMarkdown.translate(page?.content ?? "", {}, customTranslator),
+      contentType: 'text/markdown'
+    }
   }
 
   // POST /api/page/

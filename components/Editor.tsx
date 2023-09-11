@@ -60,7 +60,7 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
 
   // Set initial page state on component mount or when content/title changes
   useEffect(() => {
-    dispatch({type:'opened', page: {
+    dispatch({type: 'opened', page: {
       lastSaved: updatedAt,
       unsavedChanges: false,
       currentText: content,
@@ -217,16 +217,16 @@ export default function EditorComponent({ id, title, createdAt, updatedAt, conte
                         Export as HTML
                       </a>
                     )}
-                  </Menu.Item>
+                  </Menu.Item> */}
                   <Menu.Item>
                     {({ active }) => (
-                      <a href="#" onClick={() => { }}
+                      <a href={`${apiBaseUrl}/page/${id}/export`} download
                         className={classNames(active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm flex')}>
                         <FaMarkdown className="my-1 mr-4" />
                         Export as Markdown
                       </a>
                     )}
-                  </Menu.Item> */}
+                  </Menu.Item>
                 </div>
               </Menu.Items>
             </Transition>
