@@ -22,23 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# next.js
-/.next/
-/out/
-
-# cargo
-/target/
-
-# local env files
-.env*.local
-.env
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-*.db
