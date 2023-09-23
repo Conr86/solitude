@@ -33,10 +33,10 @@ A minimalist web-app for focused writing and note-taking. Currently in early sta
 - I'm using a README to track bugs
 
 ## Uses
-- [Next.js](https://nextjs.org/) runtime
+- [Vite](https://vitejs.dev/) for tooling
+- [Tauri](https://tauri.app/) for client bundling
+- [Typescript](https://www.typescriptlang.org/)
 - [Tiptap](https://www.tiptap.dev/) as editor backend
-- [Typescript](https://www.typescriptlang.org/) most of the time
-- [React](https://react.dev/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Prisma](https://www.prisma.io) for database queries
 

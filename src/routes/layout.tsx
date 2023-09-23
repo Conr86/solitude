@@ -27,7 +27,7 @@ export default function Layout() {
 
     const pageId =
         location[1].routeId === "/page/$pageId"
-            ? Number(location[1].pathname.slice(6))
+            ? location[1].params["pageId"]
             : 0;
     const queryClient = useQueryClient();
     const [filterText, setFilterText] = useState("");
