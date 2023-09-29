@@ -1,3 +1,5 @@
+import { Reducer } from "react";
+
 export interface PageState {
     lastSaved: Date | undefined;
     unsavedChanges: boolean;
@@ -8,31 +10,42 @@ export interface PageState {
 }
 
 export interface PageAction {
-    type: string;
-    newTitle?: string;
-    newText?: string;
-    page?: any;
+    type: "opened" | "changed" | "saved";
+    newTitle?: string | undefined;
+    newText?: string | undefined;
+    newLastSaved?: Date | undefined;
 }
 
-export const pageStateReducer = (page: PageState, action: PageAction) => {
+export const pageStateReducer: Reducer<PageState, PageAction> = (
+    prevState: PageState,
+    action: PageAction,
+): PageState => {
     switch (action.type) {
         case "opened": {
-            return action.page;
+            return {
+                ...prevState,
+                unsavedChanges: false,
+                lastSaved: action.newLastSaved,
+                currentTitle: action.newTitle ?? prevState.currentTitle,
+                currentText: action.newText,
+                lastTitle: action.newTitle ?? prevState.currentTitle,
+                lastText: action.newText,
+            };
         }
         case "changed": {
             return {
-                ...page,
+                ...prevState,
                 unsavedChanges: true,
-                currentTitle: action.newTitle ?? page.currentTitle,
-                currentText: action.newText ?? page.currentText,
+                currentTitle: action.newTitle ?? prevState.currentTitle,
+                currentText: action.newText ?? prevState.currentText,
             };
         }
         case "saved": {
             return {
-                ...page,
+                ...prevState,
                 unsavedChanges: false,
-                lastText: page.currentText,
-                lastTitle: page.currentTitle,
+                lastText: prevState.currentText,
+                lastTitle: prevState.currentTitle,
                 lastSaved: new Date(),
             };
         }

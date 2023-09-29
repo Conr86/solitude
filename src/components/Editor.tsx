@@ -10,7 +10,11 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { DeleteModal } from "./DeleteModal";
 import { apiBaseUrl, pageListQuery } from "@/helpers/api";
-import { PageState, pageStateReducer } from "@/helpers/pageStateReducer";
+import {
+    PageAction,
+    PageState,
+    pageStateReducer,
+} from "@/helpers/pageStateReducer";
 import { getEditorProps, getExtensions } from "@/helpers/tiptap.config";
 import {
     useNavigate,
@@ -21,10 +25,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export default function EditorComponent({
     id,
-    title,
+    title = "New Page",
     createdAt,
     updatedAt,
-    content,
+    content = "",
 }: Partial<Page>) {
     const { data } = useQuery(pageListQuery());
     const navigate = useNavigate();
@@ -42,11 +46,13 @@ export default function EditorComponent({
     });
 
     // Reducer for managing page state
-    const [page, dispatch] = useReducer(pageStateReducer, {
+    const [page, dispatch] = useReducer<
+        (state: PageState, action: PageAction) => PageState
+    >(pageStateReducer, {
         lastSaved: updatedAt,
         unsavedChanges: false,
-        currentText: content,
-        lastText: content,
+        currentText: content ?? undefined,
+        lastText: content ?? undefined,
         currentTitle: title,
         lastTitle: title,
     });
@@ -55,14 +61,9 @@ export default function EditorComponent({
     useEffect(() => {
         dispatch({
             type: "opened",
-            page: {
-                lastSaved: updatedAt,
-                unsavedChanges: false,
-                currentText: content,
-                lastText: content,
-                currentTitle: title,
-                lastTitle: title,
-            },
+            newTitle: title,
+            newText: content ?? undefined,
+            newLastSaved: updatedAt,
         });
     }, [content, title, updatedAt]);
 
