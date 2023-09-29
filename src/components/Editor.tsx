@@ -12,7 +12,11 @@ import { DeleteModal } from "./DeleteModal";
 import { apiBaseUrl, pageListQuery } from "@/helpers/api";
 import { PageState, pageStateReducer } from "@/helpers/pageStateReducer";
 import { getEditorProps, getExtensions } from "@/helpers/tiptap.config";
-import { useNavigate, useRouterContext } from "@tanstack/react-router";
+import {
+    useNavigate,
+    useRouter,
+    useRouterContext,
+} from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export default function EditorComponent({
@@ -24,6 +28,7 @@ export default function EditorComponent({
 }: Partial<Page>) {
     const { data } = useQuery(pageListQuery());
     const navigate = useNavigate();
+    const router = useRouter();
     // Check if the page is new (id not set)
     const isNewPage = !id;
     const { queryClient } = useRouterContext({
@@ -36,7 +41,17 @@ export default function EditorComponent({
         showTopBtn: false,
     });
 
-    // Set initial page state on component mount or when content/title changes
+    // Reducer for managing page state
+    const [page, dispatch] = useReducer(pageStateReducer, {
+        lastSaved: updatedAt,
+        unsavedChanges: false,
+        currentText: content,
+        lastText: content,
+        currentTitle: title,
+        lastTitle: title,
+    });
+
+    // Update state when content/title changes such as a query refetch
     useEffect(() => {
         dispatch({
             type: "opened",
@@ -49,17 +64,7 @@ export default function EditorComponent({
                 lastTitle: title,
             },
         });
-    }, [content, id, title, updatedAt]);
-
-    // Reducer for managing page state
-    const [page, dispatch] = useReducer(pageStateReducer, {
-        lastSaved: updatedAt,
-        unsavedChanges: false,
-        currentText: content,
-        lastText: content,
-        currentTitle: title,
-        lastTitle: title,
-    });
+    }, [content, title, updatedAt]);
 
     // Extend dayjs with relativeTime plugin
     // relativeTime lets use calculate "Saved two days ago..." from two dates
@@ -85,7 +90,7 @@ export default function EditorComponent({
 
     // Delete a page with the given ID
     const deletePage = useMutation({
-        mutationKey: ["page", id],
+        mutationKey: ["pages", id],
         mutationFn: (id: number) => {
             return fetch(`${apiBaseUrl}/page/${id}`, {
                 method: "DELETE",
@@ -122,6 +127,10 @@ export default function EditorComponent({
             // Let SWR know that the page tree structure has changed and sidebar needs updating
             queryClient.invalidateQueries({
                 queryKey: ["pages"],
+            });
+            // Dispatch a 'saved' action to update the state. Stops the blocker from blocking.
+            dispatch({
+                type: "saved",
             });
             // Redirect to the new page
             await navigate({
@@ -176,7 +185,7 @@ export default function EditorComponent({
                 page.lastText !== page.currentText ||
                 page.lastTitle !== page.currentTitle
             ) {
-                console.log(`Autosaving... id ${id}`);
+                console.log(`Autosaving...`);
                 savePage.mutate({ id, page });
             }
         }, AUTOSAVE_INTERVAL);
@@ -187,23 +196,24 @@ export default function EditorComponent({
     }, [page, id, isNewPage, savePage]);
 
     // Save on exit
-    // useEffect(() => {
-    //     const handleRouteChange = () => {
-    //         if (
-    //             page.lastText !== page.currentText ||
-    //             page.lastTitle !== page.currentTitle
-    //         ) {
-    //             console.log("Saving unsaved changes...");
-    //             savePage(id, page);
-    //         }
-    //     };
-    //     router.events.on("routeChangeStart", handleRouteChange);
-    //     // If the component is unmounted, unsubscribe
-    //     // from the event with the `off` method:
-    //     return () => {
-    //         router.events.off("routeChangeStart", handleRouteChange);
-    //     };
-    // }, [id, page, router]);
+    useEffect(() => {
+        if (
+            page.lastText === page.currentText &&
+            page.lastTitle === page.currentTitle
+        )
+            return;
+
+        const unblock = router.history.block((retry) => {
+            if (window.confirm("Save unsaved changes?")) {
+                console.log("Saving unsaved changes...");
+                if (!isNewPage) savePage.mutate({ id, page });
+                else createPage.mutate(page);
+                unblock();
+                retry();
+            }
+        });
+        return unblock;
+    });
 
     // Create editor
     const editor = useEditor(
@@ -217,7 +227,7 @@ export default function EditorComponent({
                     newText: editor.getHTML(),
                 }),
         },
-        [id],
+        [id, content, title],
     );
 
     const buttonClasses =
@@ -296,72 +306,77 @@ export default function EditorComponent({
                         <FaSave className="mr-2" /> Save
                     </Button>
                     {/* Settings dropdown menu */}
-                    <Menu as="div" className="relative inline-block text-left">
-                        <Menu.Button
-                            className={`inline-flex w-full justify-center rounded-full p-3 ${buttonClasses}`}
+                    {!isNewPage && (
+                        <Menu
+                            as="div"
+                            className="relative inline-block text-left"
                         >
-                            <FaCog />
-                        </Menu.Button>
-                        <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                        >
-                            <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                <div className="py-1">
-                                    <Menu.Item>
-                                        {({ active }) => (
-                                            <a
-                                                href="#"
-                                                onClick={() => {
-                                                    setDisplayState({
-                                                        ...displayState,
-                                                        modalOpen: true,
-                                                    });
-                                                }}
-                                                className={classNames(
-                                                    active
-                                                        ? "bg-gray-100 text-gray-900"
-                                                        : "text-gray-700",
-                                                    "px-4 py-2 text-sm flex",
-                                                )}
-                                            >
-                                                <FaTrash className="my-1 mr-4" />
-                                                Delete Page
-                                            </a>
-                                        )}
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                        {({ active }) => (
-                                            <a
-                                                href={`${apiBaseUrl}/page/${id}/export`}
-                                                download
-                                                className={classNames(
-                                                    active
-                                                        ? "bg-gray-100 text-gray-900"
-                                                        : "text-gray-700",
-                                                    "px-4 py-2 text-sm flex",
-                                                )}
-                                            >
-                                                <FaMarkdown className="my-1 mr-4" />
-                                                Export as Markdown
-                                            </a>
-                                        )}
-                                    </Menu.Item>
-                                </div>
-                            </Menu.Items>
-                        </Transition>
-                    </Menu>
+                            <Menu.Button
+                                className={`inline-flex w-full justify-center rounded-full p-3 ${buttonClasses}`}
+                            >
+                                <FaCog />
+                            </Menu.Button>
+                            <Transition
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                            >
+                                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div className="py-1">
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <a
+                                                    href="#"
+                                                    onClick={() => {
+                                                        setDisplayState({
+                                                            ...displayState,
+                                                            modalOpen: true,
+                                                        });
+                                                    }}
+                                                    className={classNames(
+                                                        active
+                                                            ? "bg-gray-100 text-gray-900"
+                                                            : "text-gray-700",
+                                                        "px-4 py-2 text-sm flex",
+                                                    )}
+                                                >
+                                                    <FaTrash className="my-1 mr-4" />
+                                                    Delete Page
+                                                </a>
+                                            )}
+                                        </Menu.Item>
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <a
+                                                    href={`${apiBaseUrl}/page/${id}/export`}
+                                                    download
+                                                    className={classNames(
+                                                        active
+                                                            ? "bg-gray-100 text-gray-900"
+                                                            : "text-gray-700",
+                                                        "px-4 py-2 text-sm flex",
+                                                    )}
+                                                >
+                                                    <FaMarkdown className="my-1 mr-4" />
+                                                    Export as Markdown
+                                                </a>
+                                            )}
+                                        </Menu.Item>
+                                    </div>
+                                </Menu.Items>
+                            </Transition>
+                        </Menu>
+                    )}
                 </div>
             </div>
 
             <Toolbar editor={editor} />
             <EditorContent editor={editor} />
-            {id && (
+            {!isNewPage && (
                 <DeleteModal
                     show={displayState.modalOpen}
                     onCancel={() => {
