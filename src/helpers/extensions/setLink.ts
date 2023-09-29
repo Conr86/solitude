@@ -1,25 +1,25 @@
-import { Editor } from '@tiptap/react'
+import { Editor } from "@tiptap/react";
 
 // TODO: convert into TSX modal component
 
 function setLink(editor: Editor) {
-    const previousUrl = editor.getAttributes('link').href
-    const url = window.prompt('URL', previousUrl)
+    const previousUrl = editor.getAttributes("link").href;
+    const url = window.prompt("URL", previousUrl);
 
     // cancelled
     if (url === null) {
-        return
+        return;
     }
 
     // empty
-    if (url === '') {
-        editor.chain().focus().extendMarkRange('link').unsetLink().run()
+    if (url === "") {
+        editor.chain().focus().extendMarkRange("link").unsetLink().run();
 
-        return
+        return;
     }
 
     // update link
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
 }
 
-export { setLink }
+export { setLink };

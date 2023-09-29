@@ -115,7 +115,7 @@ export class CustomTreeDataProvider implements TreeDataProvider {
     public onDidChangeTreeData(
         listener: (changedItemIds: TreeItemIndex[]) => void,
     ): Disposable {
-        console.log("Tree did change - redrawing tree...");
+        // console.log("Tree did change - redrawing tree...");
         listener(Object.keys(this.data));
         return { dispose: () => {} };
     }
