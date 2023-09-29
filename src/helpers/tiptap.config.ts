@@ -12,6 +12,7 @@ import { MentionSuggestionRender } from "./extensions/mention/MentionSuggestionR
 import { Page } from "prisma/prisma-client";
 import { Decorator } from "./extensions/decorator/Decorator";
 import { Quotes } from "./extensions/decorator/Quotes";
+import { Placeholder } from "@tiptap/extension-placeholder";
 
 export interface NameUrlPair {
     name: string;
@@ -57,10 +58,13 @@ export const getExtensions = (pages: Page[] | undefined) => [
     Focus.configure({
         mode: "shallowest",
         className:
-            "border-solid border-l -ml-[17px] pl-4 border-gray-950 dark:border-gray-300 text-gray-950 dark:text-gray-300",
+            "border-solid border-l -ml-[17px] pl-4 border-gray-200 dark:border-gray-700 text-gray-950 dark:text-gray-300",
     }),
     Decorator.configure({
         plugins: [Quotes],
+    }),
+    Placeholder.configure({
+        placeholder: "Write something…",
     }),
 ];
 export const getEditorProps = () => {
