@@ -13,6 +13,11 @@ import { Page } from "prisma/prisma-client";
 import { Decorator } from "./extensions/decorator/Decorator";
 import { Quotes } from "./extensions/decorator/Quotes";
 import { Placeholder } from "@tiptap/extension-placeholder";
+import Collaboration from "@tiptap/extension-collaboration";
+import * as Y from "yjs";
+import { IndexeddbPersistence } from "y-indexeddb";
+import { HocuspocusProvider } from "@hocuspocus/provider";
+import { Extensions } from "@tiptap/react";
 
 export interface NameUrlPair {
     name: string;
@@ -29,44 +34,61 @@ const itemsSearchFilter =
             )
             .slice(0, 5);
 
-export const getExtensions = (pages: Page[] | undefined) => [
-    StarterKit.configure({
-        codeBlock: false,
-    }),
-    Link.configure({
-        linkOnPaste: true,
-        openOnClick: true,
-        HTMLAttributes: {
-            class: "cursor-pointer hover:text-primary-400",
-            title: "",
-        },
-    }),
-    Table.configure({
-        resizable: true,
-    }),
-    TableRow,
-    TableHeader,
-    TableCell,
-    Typography,
-    CharacterCount,
-    Mention.configure({
-        suggestion: {
-            render: MentionSuggestionRender,
-            items: pages ? itemsSearchFilter(pages) : undefined,
-        },
-    }),
-    Focus.configure({
-        mode: "shallowest",
-        className:
-            "border-solid border-l -ml-[17px] pl-4 border-gray-200 dark:border-gray-700 text-gray-950 dark:text-gray-300",
-    }),
-    Decorator.configure({
-        plugins: [Quotes],
-    }),
-    Placeholder.configure({
-        placeholder: "Write something…",
-    }),
-];
+export const getExtensions = (
+    provider: HocuspocusProvider | undefined,
+    pages: Page[] | undefined,
+): Extensions => {
+    // Store the Y document in the browser
+    // new IndexeddbPersistence(`solitude/page/${id}`, ydoc);
+
+    return [
+        StarterKit.configure({
+            history: false,
+            codeBlock: false,
+        }),
+        Link.configure({
+            linkOnPaste: true,
+            openOnClick: true,
+            HTMLAttributes: {
+                class: "cursor-pointer hover:text-primary-400",
+                title: "",
+            },
+        }),
+        Table.configure({
+            resizable: true,
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
+        Typography,
+        CharacterCount,
+        Mention.configure({
+            suggestion: {
+                render: MentionSuggestionRender,
+                items: pages ? itemsSearchFilter(pages) : undefined,
+            },
+        }),
+        Focus.configure({
+            mode: "shallowest",
+            className:
+                "border-solid border-l -ml-[17px] pl-4 border-gray-200 dark:border-gray-700 text-gray-950 dark:text-gray-300",
+        }),
+        Decorator.configure({
+            plugins: [Quotes],
+        }),
+        Placeholder.configure({
+            placeholder: "Write something…",
+        }),
+        ...(provider
+            ? [
+                  Collaboration.configure({
+                      document: provider.document,
+                      field: "content",
+                  }),
+              ]
+            : []),
+    ];
+};
 export const getEditorProps = () => {
     return {
         attributes: {

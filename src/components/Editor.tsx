@@ -1,5 +1,5 @@
 import { useEditor, EditorContent } from "@tiptap/react";
-import { useEffect, useState, Fragment, useReducer } from "react";
+import { useEffect, useState, Fragment, useReducer, useMemo } from "react";
 import { Toolbar } from "./Toolbar";
 import { Button } from "../components/Button";
 import { FaAngleUp, FaCog, FaMarkdown, FaSave, FaTrash } from "react-icons/fa";
@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { DeleteModal } from "./DeleteModal";
 import { apiBaseUrl, pageListQuery } from "@/helpers/api";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import {
     PageAction,
     PageState,
@@ -22,50 +23,30 @@ import {
     useRouterContext,
 } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { HocuspocusProvider } from "@hocuspocus/provider";
 
 export default function EditorComponent({
     id,
     title = "New Page",
     createdAt,
     updatedAt,
-    content = "",
 }: Partial<Page>) {
     const { data } = useQuery(pageListQuery());
     const navigate = useNavigate();
-    const router = useRouter();
+    // const router = useRouter();
     // Check if the page is new (id not set)
     const isNewPage = !id;
     const { queryClient } = useRouterContext({
         from: isNewPage ? "/new" : "/page/$pageId",
     });
 
+    const [currentTitle, setTitle] = useState(title);
+
     // State for controlling display-related values
     const [displayState, setDisplayState] = useState({
         modalOpen: false,
         showTopBtn: false,
     });
-
-    // Reducer for managing page state
-    const [page, dispatch] = useReducer<
-        (state: PageState, action: PageAction) => PageState
-    >(pageStateReducer, {
-        lastSaved: updatedAt,
-        unsavedChanges: false,
-        currentText: content ?? undefined,
-        lastText: content ?? undefined,
-        currentTitle: title,
-        lastTitle: title,
-    });
-
-    // Update state when content/title changes such as a query refetch
-    useEffect(() => {
-        dispatch({
-            type: "opened",
-            newTitle: title,
-            newText: content ?? undefined,
-            newLastSaved: updatedAt,
-        });
-    }, [content, title, updatedAt]);
 
     // Extend dayjs with relativeTime plugin
     // relativeTime lets use calculate "Saved two days ago..." from two dates
@@ -113,7 +94,7 @@ export default function EditorComponent({
     // Create a page with current editor contents and title and redirect to that new page
     const createPage = useMutation({
         mutationKey: ["pages", id],
-        mutationFn: (page: PageState) =>
+        mutationFn: (page: { currentTitle: string; currentText: string }) =>
             fetch(`${apiBaseUrl}/page`, {
                 method: "POST",
                 headers: {
@@ -129,10 +110,6 @@ export default function EditorComponent({
             queryClient.invalidateQueries({
                 queryKey: ["pages"],
             });
-            // Dispatch a 'saved' action to update the state. Stops the blocker from blocking.
-            dispatch({
-                type: "saved",
-            });
             // Redirect to the new page
             await navigate({
                 to: "/page/$pageId",
@@ -141,10 +118,16 @@ export default function EditorComponent({
         },
     });
 
-    // Save page content from given page state for given id
-    const savePage = useMutation({
+    // Save page title from given page state for given id
+    const saveTitle = useMutation({
         mutationKey: ["pages", id],
-        mutationFn: async ({ id, page }: { id: number; page: PageState }) => {
+        mutationFn: async ({
+            id,
+            newTitle,
+        }: {
+            id: number;
+            newTitle: string;
+        }) => {
             // Note that we don't include modifiedAt as this is calculated automatically by the DB
             await fetch(`${apiBaseUrl}/page/${id}`, {
                 method: "PUT",
@@ -152,8 +135,7 @@ export default function EditorComponent({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    title: page.currentTitle,
-                    content: page.currentText,
+                    title: newTitle,
                 }),
             });
         },
@@ -162,73 +144,78 @@ export default function EditorComponent({
             queryClient.invalidateQueries({
                 queryKey: ["pages", id],
             });
-            // Check if title has changed, if so, invalidate the page list cache triggering a refresh of the sidebar tree
-            if (page.currentTitle !== page.lastTitle) {
-                queryClient.invalidateQueries({
-                    queryKey: ["pages"],
-                });
-            }
-            // Dispatch a 'saved' action to update the state
-            dispatch({
-                type: "saved",
+            // Invalidate the page list cache triggering a refresh of the sidebar tree
+            queryClient.invalidateQueries({
+                queryKey: ["pages"],
             });
         },
     });
 
     // Autosave editor content
-    const AUTOSAVE_INTERVAL: number = 3000;
-    useEffect(() => {
-        if (isNewPage) return;
-        // Set up a timer to automatically save the page after a certain interval
-        const timer = setTimeout(() => {
-            // Check if there are unsaved changes in the editor
-            if (
-                page.lastText !== page.currentText ||
-                page.lastTitle !== page.currentTitle
-            ) {
-                console.log(`Autosaving...`);
-                savePage.mutate({ id, page });
-            }
-        }, AUTOSAVE_INTERVAL);
-        // Clean up the timer when the component unmounts or the dependencies change
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [page, id, isNewPage, savePage]);
+    // const AUTOSAVE_INTERVAL: number = 3000;
+    // useEffect(() => {
+    //     if (isNewPage) return;
+    //     // Set up a timer to automatically save the page after a certain interval
+    //     const timer = setTimeout(() => {
+    //         // Check if there are unsaved changes in the editor
+    //         if (
+    //             page.lastText !== page.currentText ||
+    //             page.lastTitle !== page.currentTitle
+    //         ) {
+    //             console.log(`Autosaving...`);
+    //             savePage.mutate({ id, page });
+    //         }
+    //     }, AUTOSAVE_INTERVAL);
+    //     // Clean up the timer when the component unmounts or the dependencies change
+    //     return () => {
+    //         clearTimeout(timer);
+    //     };
+    // }, [page, id, isNewPage, savePage]);
 
     // Save on exit
-    useEffect(() => {
-        if (
-            page.lastText === page.currentText &&
-            page.lastTitle === page.currentTitle
-        )
-            return;
+    // useEffect(() => {
+    //     if (
+    //         page.lastText === page.currentText &&
+    //         page.lastTitle === page.currentTitle
+    //     )
+    //         return;
+    //
+    //     const unblock = router.history.block((retry) => {
+    //         if (window.confirm("Save unsaved changes?")) {
+    //             console.log("Saving unsaved changes...");
+    //             if (!isNewPage) savePage.mutate({ id, page });
+    //             else createPage.mutate(page);
+    //             unblock();
+    //             retry();
+    //         }
+    //     });
+    //     return unblock;
+    // });
 
-        const unblock = router.history.block((retry) => {
-            if (window.confirm("Save unsaved changes?")) {
-                console.log("Saving unsaved changes...");
-                if (!isNewPage) savePage.mutate({ id, page });
-                else createPage.mutate(page);
-                unblock();
-                retry();
-            }
-        });
-        return unblock;
-    });
+    const provider = useMemo(
+        () =>
+            !isNewPage
+                ? new HocuspocusProvider({
+                      url: "ws://127.0.0.1:1234",
+                      name: `solitude/page/${id}`,
+                  })
+                : undefined,
+        [id, isNewPage],
+    );
 
     // Create editor
     const editor = useEditor(
         {
-            extensions: getExtensions(data),
+            extensions: getExtensions(provider, data),
             editorProps: getEditorProps(),
-            content,
-            onUpdate: ({ editor }) =>
-                dispatch({
-                    type: "changed",
-                    newText: editor.getHTML(),
-                }),
+            // content,
+            // onUpdate: ({ editor }) =>
+            //     dispatch({
+            //         type: "changed",
+            //         newText: editor.getHTML(),
+            //     }),
         },
-        [id, content, title],
+        [id],
     );
 
     const buttonClasses =
@@ -239,16 +226,15 @@ export default function EditorComponent({
             {/* Page title */}
             <input
                 type="text"
-                value={page.currentTitle}
+                value={title}
                 onChange={(e) => {
-                    dispatch({
-                        type: "changed",
-                        newText: undefined,
-                        newTitle: e.target.value,
-                    });
+                    // TODO: debounce this
+                    isNewPage
+                        ? setTitle(e.target.value)
+                        : saveTitle.mutate({ id, newTitle: e.target.value });
                 }}
                 style={{ fontFamily: "Libre Baskerville" }}
-                className={`font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-1 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`}
+                className={`w-full font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-1 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`}
             ></input>
             <div className="flex gap-2 flex-row">
                 {/* Page info */}
@@ -262,7 +248,7 @@ export default function EditorComponent({
                     <p>
                         {!isNewPage
                             ? `Last saved ${dayjs().from(
-                                  dayjs(page.lastSaved),
+                                  dayjs(updatedAt),
                                   true,
                               )} ago`
                             : `Unsaved draft...`}
@@ -276,19 +262,13 @@ export default function EditorComponent({
                         title={
                             isNewPage
                                 ? "Autosave disabled on new pages. Manually save your work"
-                                : page.unsavedChanges
-                                ? "Unsaved changes..."
                                 : "Saved"
                         }
                         className="mr-4"
                     >
                         <svg
                             className={`py-3 px-2 ${
-                                isNewPage
-                                    ? "fill-red-500"
-                                    : !page.unsavedChanges
-                                    ? "fill-primary-700"
-                                    : "fill-amber-500 animate-pulse"
+                                isNewPage ? "fill-red-500" : "fill-primary-700"
                             }`}
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
@@ -296,16 +276,19 @@ export default function EditorComponent({
                             <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" />
                         </svg>
                     </span>
-                    <Button
-                        color={buttonClasses}
-                        onClick={() => {
-                            !isNewPage
-                                ? savePage.mutate({ id, page })
-                                : createPage.mutate(page);
-                        }}
-                    >
-                        <FaSave className="mr-2" /> Save
-                    </Button>
+                    {isNewPage && (
+                        <Button
+                            color={buttonClasses}
+                            onClick={() => {
+                                createPage.mutate({
+                                    currentTitle: currentTitle,
+                                    currentText: editor?.getHTML() ?? "",
+                                });
+                            }}
+                        >
+                            <FaSave className="mr-2" /> Save
+                        </Button>
+                    )}
                     {/* Settings dropdown menu */}
                     {!isNewPage && (
                         <Menu
@@ -315,7 +298,7 @@ export default function EditorComponent({
                             <Menu.Button
                                 className={`inline-flex w-full justify-center rounded-full p-3 ${buttonClasses}`}
                             >
-                                <FaCog />
+                                <BsThreeDotsVertical />
                             </Menu.Button>
                             <Transition
                                 as={Fragment}

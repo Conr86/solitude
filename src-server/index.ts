@@ -3,6 +3,25 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { NodeHtmlMarkdown, TranslatorConfigObject } from "node-html-markdown";
 import fastify from "fastify";
 import cors from "@fastify/cors";
+import websocket from "@fastify/websocket";
+import { Server } from "@hocuspocus/server";
+import { Doc } from "yjs";
+
+// Configure Hocuspocus
+const server = Server.configure({
+  // async onStoreDocument(data) {
+  //   // Save to database. Example:
+  //   // saveToDatabase(data.document, data.documentName);
+  // },
+  //
+  // async onLoadDocument(data): Doc {
+  //   return (
+  //     (await prisma.page.findUnique({
+  //       where: { id: Number(data.documentName) },
+  //     })) || new Doc()
+  //   );
+  // },
+});
 
 const prisma = new PrismaClient();
 const envToLogger = {
@@ -20,6 +39,16 @@ const envToLogger = {
 };
 const app = fastify({ logger: envToLogger.development ?? true });
 app.register(cors);
+app.register(websocket);
+
+// WebSocket backend
+// app.get("/sync", { websocket: true }, function wsHandler(connection, req) {
+//   server.handleConnection(connection.socket, req.raw, {});
+//   // connection.socket.on("message", (message) => {
+//   //   // message.toString() === 'hi from client'
+//   //   connection.socket.send("hi from server");
+//   // });
+// });
 
 // GET /api/page (list many)
 app.get("/page", async () => {

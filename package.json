@@ -13,14 +13,18 @@
   },
   "dependencies": {
     "@fastify/cors": "^8.2.1",
+    "@fastify/websocket": "^8.2.0",
     "@fontsource/libre-baskerville": "^5.0.8",
     "@headlessui/react": "^1.7.17",
+    "@hocuspocus/provider": "^2.5.0",
+    "@hocuspocus/server": "^2.5.0",
     "@next/font": "^13.5.2",
     "@prisma/client": "4.13.0",
     "@tailwindcss/typography": "^0.5.10",
     "@tanstack/react-query": "^4.35.3",
     "@tanstack/react-router": "^0.0.1-beta.191",
     "@tiptap/extension-character-count": "^2.1.11",
+    "@tiptap/extension-collaboration": "^2.1.11",
     "@tiptap/extension-focus": "^2.1.11",
     "@tiptap/extension-link": "^2.1.11",
     "@tiptap/extension-mention": "^2.1.11",
@@ -44,7 +48,8 @@
     "react-cool-inview": "^3.0.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
-    "swr": "^2.2.2"
+    "swr": "^2.2.2",
+    "y-indexeddb": "^9.0.11"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^4.35.3",
@@ -52,6 +57,7 @@
     "@types/jest": "^29.5.5",
     "@types/node": "^20.6.3",
     "@types/react": "^18.2.22",
+    "@types/ws": "^8.5.6",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
