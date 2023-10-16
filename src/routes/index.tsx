@@ -4,6 +4,7 @@ import { Page } from "prisma/prisma-client";
 import { useQuery } from "@tanstack/react-query";
 import { pageListQuery } from "@/helpers/api.ts";
 import { Link } from "@tanstack/react-router";
+import { Helmet } from "react-helmet";
 
 export default function Index() {
     const { data } = useQuery(pageListQuery());
@@ -13,6 +14,9 @@ export default function Index() {
 
     return (
         <>
+            <Helmet>
+                <title>Solitude</title>
+            </Helmet>
             <h1 className="font-bold text-gray-900 dark:text-white px-0 py-2 mb-8 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit">
                 Jump back in...
             </h1>
