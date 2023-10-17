@@ -26,7 +26,7 @@ export default function Layout() {
     const location = useMatches();
 
     const pageId =
-        location[1].routeId === "/page/$pageId"
+        location[1]?.routeId === "/page/$pageId"
             ? location[1].params["pageId"]
             : 0;
     const queryClient = useQueryClient();
@@ -136,7 +136,7 @@ export default function Layout() {
                             </li>
                         </ul>
                         {/* New Page warning */}
-                        {location[1].pathname === "/new" && (
+                        {location[1]?.pathname === "/new" && (
                             <div
                                 id="dropdown-cta"
                                 className="p-4 mt-6 rounded-lg bg-secondary-200 dark:bg-secondary-700"

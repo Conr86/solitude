@@ -125,6 +125,7 @@ export default function EditorComponent({
                 }),
             }),
         onSuccess: async (data) => {
+            console.log("Saved page. Redirecting...")
             // Let SWR know that the page tree structure has changed and sidebar needs updating
             queryClient.invalidateQueries({
                 queryKey: ["pages"],

@@ -23,7 +23,7 @@ app.register(cors);
 
 // GET /api/page (list many)
 app.get("/page", async () => {
-  return await prisma.page.findMany({
+  return prisma.page.findMany({
     select: {
       id: true,
       title: true,
@@ -46,7 +46,7 @@ app.get("/page", async () => {
 // GET /api/page/:id
 app.get<{ Params: Prisma.PageSelect }>("/page/:id", async (req) => {
   const { id } = req.params;
-  return await prisma.page.findUnique({
+  return prisma.page.findUnique({
     where: { id: Number(id) },
   });
 });
@@ -123,7 +123,10 @@ app.put<{ Params: Prisma.PageSelect; Body: Prisma.PageUpdateInput }>(
 
       return page;
     } catch (error) {
-      return { error: `Page with ID ${id} does not exist in the database` };
+      app.log.error(error?.toString());
+      return {
+        error: `Page with ID ${id} might not exist in the database. Full error: ${error?.toString()}`,
+      };
     }
   },
 );
@@ -132,7 +135,7 @@ app.put<{ Params: Prisma.PageSelect; Body: Prisma.PageUpdateInput }>(
 app.post<{ Body: Prisma.PageCreateInput }>(`/page`, async (req) => {
   const body = req.body;
   // Create data in your database
-  return await prisma.page.create({
+  return prisma.page.create({
     data: { ...body, updatedAt: new Date() },
   });
 });
@@ -140,7 +143,7 @@ app.post<{ Body: Prisma.PageCreateInput }>(`/page`, async (req) => {
 // DELETE delete page
 app.delete<{ Params: Prisma.PageSelect }>(`/page/:id`, async (req) => {
   const { id } = req.params;
-  return await prisma.page.delete({
+  return prisma.page.delete({
     where: {
       id: Number(id),
     },
