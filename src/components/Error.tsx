@@ -1,12 +1,13 @@
-
-export default function ErrorPage({statusCode} : {statusCode: number}) {
-  return (
-    <div id="error-page">
-      <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
-      <p>
-        <i>{statusCode}</i>
-      </p>
-    </div>
-  );
+export default function ErrorPage({ error }: { error: string | undefined }) {
+    return (
+        <div className="dark:text-gray-100 space-y-4">
+            <h1 className={"text-4xl"}>Oops!</h1>
+            <p className={"font-semibold"}>
+                Sorry, an unexpected error has occurred.
+            </p>
+            <p>
+                <i>{error}</i>
+            </p>
+        </div>
+    );
 }

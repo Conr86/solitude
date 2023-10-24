@@ -22,7 +22,7 @@ import { Outlet, useMatches } from "@tanstack/react-router";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 export default function Layout() {
-    const { data } = useQuery(pageListQuery());
+    const { data, isError } = useQuery(pageListQuery());
     const location = useMatches();
 
     const pageId =
@@ -57,27 +57,32 @@ export default function Layout() {
 
     // if (error) return <Error statusCode={error.statusCode}/>
 
-    if (!data)
+    if (isError || !data)
         return (
-            <aside
-                id="sidebar-multi-level-sidebar"
-                className={`${
-                    sidebarVisible ? "translate-x-0" : "-translate-x-full"
-                } fixed top-0 left-0 z-40 w-64 h-screen transition-transform duration-300 ease-in-out`}
-                aria-label="Sidebar"
-            >
-                <div className="h-full overflow-y-auto bg-secondary-100 dark:bg-secondary-800">
-                    <div className="flex h-screen w-full justify-center items-center">
-                        <img
-                            className="animate-pulse mx-auto float-center w-1/2 "
-                            src="/logo.svg"
-                            alt="Solitude Logo"
-                            width={100}
-                            height={100}
-                        />
+            <>
+                <aside
+                    id="sidebar-multi-level-sidebar"
+                    className={`${
+                        sidebarVisible ? "translate-x-0" : "-translate-x-full"
+                    } fixed top-0 left-0 z-40 w-64 h-screen transition-transform duration-300 ease-in-out`}
+                    aria-label="Sidebar"
+                >
+                    <div className="h-full overflow-y-auto bg-secondary-100 dark:bg-secondary-800">
+                        <div className="flex h-screen w-full justify-center items-center">
+                            <img
+                                className="animate-pulse mx-auto float-center w-1/2 "
+                                src="/logo.svg"
+                                alt="Solitude Logo"
+                                width={100}
+                                height={100}
+                            />
+                        </div>
                     </div>
+                </aside>
+                <div className="container w-full md:max-w-3xl mx-auto px-10 py-20">
+                    <Outlet />
                 </div>
-            </aside>
+            </>
         );
 
     return (

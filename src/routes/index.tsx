@@ -5,12 +5,19 @@ import { useQuery } from "@tanstack/react-query";
 import { pageListQuery } from "@/helpers/api.ts";
 import { Link } from "@tanstack/react-router";
 import { Helmet } from "react-helmet";
+import ErrorPage from "@/components/Error.tsx";
+import { PageWithChildren } from "@/helpers/CustomTreeDataProvider.ts";
 
 export default function Index() {
-    const { data } = useQuery(pageListQuery());
+    const query = pageListQuery();
+    const { data, isError, error } = useQuery<PageWithChildren[], Error>(
+        query.queryKey,
+        query.queryFn,
+    );
     dayjs.extend(relativeTime);
 
     // const pagesCount = data.length;
+    if (isError || !data) return <ErrorPage error={error?.message} />;
 
     return (
         <>

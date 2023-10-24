@@ -25,15 +25,15 @@ const routerContext = new RouterContext<{
 
 const rootRoute = routerContext.createRootRoute({
     component: Layout,
-    beforeLoad: () => {
-        return { queryOptions: pageListQuery() };
-    },
-    loader: async ({
-        context: { queryClient },
-        routeContext: { queryOptions },
-    }) => {
-        await queryClient.ensureQueryData(queryOptions);
-    },
+    // beforeLoad: () => {
+    //     return { queryOptions: pageListQuery() };
+    // },
+    // loader: async ({
+    //     context: { queryClient },
+    //     routeContext: { queryOptions },
+    // }) => {
+    //     await queryClient.ensureQueryData(queryOptions);
+    // },
 });
 export const indexRoute = new Route({
     getParentRoute: () => rootRoute,
