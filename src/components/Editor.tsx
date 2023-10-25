@@ -102,7 +102,7 @@ export default function EditorComponent({
         },
         onSuccess: async () => {
             // Let SWR know that the page tree structure has changed and sidebar needs updating
-            await queryClient.invalidateQueries({
+            void queryClient.invalidateQueries({
                 queryKey: ["pages"],
             });
             // Redirect to Home
@@ -127,7 +127,7 @@ export default function EditorComponent({
         onSuccess: async (data) => {
             console.log("Saved page. Redirecting...");
             // Let SWR know that the page tree structure has changed and sidebar needs updating
-            await queryClient.invalidateQueries({
+            void queryClient.invalidateQueries({
                 queryKey: ["pages"],
             });
             // Dispatch a 'saved' action to update the state. Stops the blocker from blocking.

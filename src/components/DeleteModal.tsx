@@ -37,8 +37,8 @@ export function DeleteModal({ show, onConfirm, onCancel }: DeleteModalProps) {
                             >
                                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-secondary-100 dark:bg-secondary-800 p-6 text-left align-middle shadow-xl transition-all">
                                     <Dialog.Title
-                                        as="h3"
-                                        className="text-lg font-medium leading-6"
+                                        as="h2"
+                                        className="text-xl font-medium leading-6"
                                     >
                                         Delete Page
                                     </Dialog.Title>
@@ -52,14 +52,14 @@ export function DeleteModal({ show, onConfirm, onCancel }: DeleteModalProps) {
                                     <div className="mt-4">
                                         <button
                                             type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-red-200 mr-2 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                                            className="inline-flex justify-center rounded-md border border-transparent bg-red-700 mr-2 px-4 py-2 text-sm font-medium text-secondary-100 hover:bg-red-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                                             onClick={onConfirm}
                                         >
                                             Delete
                                         </button>
                                         <button
                                             type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-primary-100 mr-2 px-4 py-2 text-sm font-medium text-primary-900 hover:bg-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                                            className="inline-flex justify-center rounded-md border border-transparent bg-secondary-100 mr-2 px-4 py-2 text-sm font-medium text-primary-900 hover:bg-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                                             onClick={onCancel}
                                         >
                                             Cancel
