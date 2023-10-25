@@ -125,7 +125,7 @@ export default function EditorComponent({
                 }),
             }),
         onSuccess: async (data) => {
-            console.log("Saved page. Redirecting...")
+            console.log("Saved page. Redirecting...");
             // Let SWR know that the page tree structure has changed and sidebar needs updating
             queryClient.invalidateQueries({
                 queryKey: ["pages"],
@@ -274,6 +274,7 @@ export default function EditorComponent({
                 <div className="flex gap-2 h-10 grow flex-row place-content-end">
                     {/* Save indicator */}
                     <span
+                        className="mr-2"
                         title={
                             isNewPage
                                 ? "Autosave disabled on new pages. Manually save your work"
@@ -281,21 +282,17 @@ export default function EditorComponent({
                                 ? "Unsaved changes..."
                                 : "Saved"
                         }
-                        className="mr-4"
                     >
-                        <svg
-                            className={`py-3 px-2 ${
+                        <span
+                            className={`block relative rounded-full top-3 ${
                                 isNewPage
-                                    ? "fill-red-500"
+                                    ? "bg-red-500"
                                     : !page.unsavedChanges
-                                    ? "fill-primary-700"
-                                    : "fill-amber-500 animate-pulse"
+                                    ? "bg-primary-700"
+                                    : "bg-amber-500 animate-pulse"
                             }`}
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                        >
-                            <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" />
-                        </svg>
+                            style={{ height: 16, width: 16 }}
+                        />
                     </span>
                     <Button
                         color={buttonClasses}
