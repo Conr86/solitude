@@ -44,11 +44,13 @@ app.get("/page", async () => {
 });
 
 // GET /api/page/:id
-app.get<{ Params: Prisma.PageSelect }>("/page/:id", async (req) => {
+app.get<{ Params: Prisma.PageSelect }>("/page/:id", async (req, res) => {
   const { id } = req.params;
-  return prisma.page.findUnique({
+  const page = await prisma.page.findUnique({
     where: { id: Number(id) },
   });
+  if (page == null) res.code(404).send({ message: "Page not found" });
+  else return page;
 });
 
 // GET /api/page/:id/export to markdown
@@ -57,6 +59,7 @@ app.get<{ Params: Prisma.PageSelect }>("/page/:id/export", async (req, res) => {
   const page = await prisma.page.findUnique({
     where: { id: Number(id) },
   });
+  if (page == null) res.code(404).send({ message: "Page not found" });
   const header =
     `---\n` +
     `id: ${page?.id}\n` +
