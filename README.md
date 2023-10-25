@@ -12,26 +12,25 @@ A minimalist web-app for focused writing and note-taking. Currently in early sta
     - Markdown shortcuts e.g. #Heading, \*\*emphasis\*\* are supported
     - @mention other pages to create dynamic links
 - Autosaving with save status and 'last updated' indicators
-- Tree structure for pages, similar to Notion
+- Tree structure for page organisation, similar to Notion
 - Search for pages from the sidebar
 - Word count
-- Attractive UI including light and dark mode based on system setting
+- Attractive UI including light and dark mode
 - Export a page as Markdown
 
 ### On the roadmap
 - Embedded images
-- Offline support, including syncing
+- Offline support, including syncing and conflict-handling
 - Backups and revision control
-- Manual toggling of light/dark mode
 - Basic insights on the Home page such as number of pages or total word count
 - Workspaces or projects, letting you have multiple collections of pages
 
 ## Uses
-- [Vite](https://vitejs.dev/) for tooling
-- [Tauri](https://tauri.app/) for client bundling
-- [Typescript](https://www.typescriptlang.org/)
-- [Tiptap](https://www.tiptap.dev/) as editor backend
-- [TailwindCSS](https://tailwindcss.com/)
+- [Vite](https://vitejs.dev/) for React bundling
+- [Tauri](https://tauri.app/) for offline client bundling
+- [Typescript](https://www.typescriptlang.org/) for (almost) everything
+- [Tiptap](https://www.tiptap.dev/) as text editor backend
+- [TailwindCSS](https://tailwindcss.com/) for styling
 - [Prisma](https://www.prisma.io) for database queries
 
 Currently, uses a SQLite database via Prisma, but this can be swapped out for any database that Prisma supports with minimal changes.
@@ -51,9 +50,10 @@ npx prisma generate
 npx prisma db push
 ```
 
-Then, run the development server:
+Then, run the API server and frontend:
 
 ```bash
+npm run server
 npm run dev
 ```
 
