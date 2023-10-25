@@ -30,7 +30,7 @@ export default function EditorComponent({
     updatedAt,
     content = "",
 }: Partial<Page>) {
-    const { data } = useQuery(pageListQuery());
+    const { data } = useQuery(pageListQuery);
     const navigate = useNavigate();
     const router = useRouter();
     // Check if the page is new (id not set)
@@ -102,7 +102,7 @@ export default function EditorComponent({
         },
         onSuccess: async () => {
             // Let SWR know that the page tree structure has changed and sidebar needs updating
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
                 queryKey: ["pages"],
             });
             // Redirect to Home
@@ -127,7 +127,7 @@ export default function EditorComponent({
         onSuccess: async (data) => {
             console.log("Saved page. Redirecting...");
             // Let SWR know that the page tree structure has changed and sidebar needs updating
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
                 queryKey: ["pages"],
             });
             // Dispatch a 'saved' action to update the state. Stops the blocker from blocking.
@@ -160,12 +160,12 @@ export default function EditorComponent({
         },
         onSuccess: async () => {
             // Let the cache know that this page has changed
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
                 queryKey: ["pages", id],
             });
             // Check if title has changed, if so, invalidate the page list cache triggering a refresh of the sidebar tree
             if (page.currentTitle !== page.lastTitle) {
-                queryClient.invalidateQueries({
+                await queryClient.invalidateQueries({
                     queryKey: ["pages"],
                 });
             }

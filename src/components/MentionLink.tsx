@@ -9,7 +9,7 @@ const MentionLink = (props: {
     options: MentionOptions;
     node: ProseMirrorNode;
 }) => {
-    const { data } = useQuery(pageListQuery());
+    const { data } = useQuery(pageListQuery);
 
     return (
         <NodeViewWrapper className="mention inline">

@@ -12,10 +12,10 @@ function fetchPageById(pageId: string): Promise<Page> {
     return axios.get(`${apiBaseUrl}/page/${pageId}`).then((r) => r.data);
 }
 
-export const pageListQuery = () => ({
+export const pageListQuery = {
     queryKey: ["pages"],
     queryFn: fetchPages,
-});
+};
 
 export const pageByIdQuery = (pageId: string) => ({
     queryKey: ["pages", pageId],

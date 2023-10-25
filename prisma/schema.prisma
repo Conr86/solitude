@@ -1,25 +1,20 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:dev.db"//env("DATABASE_URL")
+  url      = "file:dev.db"
 }
 
 model Page {
-  id Int @id @default(autoincrement())
-  //id String @id @default(auto()) @map("_id") @db.ObjectId
-  title   String
+  id        Int      @id @default(autoincrement())
+  title     String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  content String?
-  order Int?
-  parentId  Int?  
+  content   String?
+  order     Int?
+  parentId  Int?
   parent    Page?    @relation("ParentChild", fields: [parentId], references: [id])
   children  Page[]   @relation("ParentChild")
-  
 }

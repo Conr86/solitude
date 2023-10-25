@@ -27,7 +27,7 @@ import classNames from "classnames";
 import DarkModeSwitcher from "@/components/DarkModeSwitcher.tsx";
 
 export default function Layout() {
-    const { data, isError } = useQuery(pageListQuery());
+    const { data, isError } = useQuery(pageListQuery);
     const location = useMatches();
     const pageId =
         location[1]?.routeId === "/page/$pageId"

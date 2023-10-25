@@ -7,7 +7,6 @@ import {
 import { Prisma } from "prisma/prisma-client";
 import { apiBaseUrl } from "@/helpers/api";
 import { QueryClient } from "@tanstack/react-query";
-// import { KeyedMutator } from 'swr'
 
 /*
     Hacky modification of StaticTreeDataProvider that redraws the tree when the contents change.
@@ -19,7 +18,7 @@ import { QueryClient } from "@tanstack/react-query";
 */
 
 // Create PageWithChildren type
-const pageWithChildren = Prisma.validator<Prisma.PageArgs>()({
+const pageWithChildren = Prisma.validator<Prisma.PageDefaultArgs>()({
     include: { children: { select: { id: true, order: true } } },
 });
 export type PageWithChildren = Prisma.PageGetPayload<typeof pageWithChildren>;

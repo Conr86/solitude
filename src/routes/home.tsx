@@ -9,10 +9,8 @@ import ErrorPage from "@/components/Error.tsx";
 import { PageWithChildren } from "@/helpers/CustomTreeDataProvider.ts";
 
 export default function Home() {
-    const query = pageListQuery();
     const { data, isError, error } = useQuery<PageWithChildren[], Error>(
-        query.queryKey,
-        query.queryFn,
+        pageListQuery,
     );
     dayjs.extend(relativeTime);
 
