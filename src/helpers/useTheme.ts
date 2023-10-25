@@ -1,15 +1,12 @@
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 
 export type ThemeType = "system" | "light" | "dark";
 const themeAtom = atomWithStorage<ThemeType>("activeTheme", "system");
 
-export function useTheme(): {
-    activeTheme: ThemeType;
-    setActiveTheme: (theme: ThemeType) => void;
-} {
-    const [activeTheme, setActiveTheme] = useAtom(themeAtom);
+export function ThemeProvider({ children }: { children: ReactNode }) {
+    const [activeTheme] = useAtom(themeAtom);
 
     useEffect(() => {
         const matchMedia = window.matchMedia("(prefers-color-scheme: dark)");
@@ -35,5 +32,13 @@ export function useTheme(): {
         return () => matchMedia.removeEventListener("change", listener);
     }, [activeTheme]);
 
+    return children;
+}
+
+export function useTheme(): {
+    activeTheme: ThemeType;
+    setActiveTheme: (theme: ThemeType) => void;
+} {
+    const [activeTheme, setActiveTheme] = useAtom(themeAtom);
     return { activeTheme, setActiveTheme };
 }

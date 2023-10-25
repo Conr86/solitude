@@ -16,6 +16,7 @@ import "@fontsource/libre-baskerville";
 import "@fontsource/libre-baskerville/700.css";
 import Layout from "@/routes/layout.tsx";
 import { pageByIdQuery } from "@/helpers/api.ts";
+import { ThemeProvider } from "@/helpers/useTheme.ts";
 
 const queryClient = new QueryClient();
 const routerContext = new RouterContext<{
@@ -63,9 +64,11 @@ const router = new Router({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-        <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-            <ReactQueryDevtools position="bottom-right" />
-        </QueryClientProvider>
+        <ThemeProvider>
+            <QueryClientProvider client={queryClient}>
+                <RouterProvider router={router} />
+                <ReactQueryDevtools position="bottom" />
+            </QueryClientProvider>
+        </ThemeProvider>
     </React.StrictMode>,
 );
