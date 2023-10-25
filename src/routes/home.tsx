@@ -7,6 +7,7 @@ import { Link } from "@tanstack/react-router";
 import { Helmet } from "react-helmet";
 import ErrorPage from "@/components/Error.tsx";
 import { PageWithChildren } from "@/helpers/CustomTreeDataProvider.ts";
+import { LoadingBox } from "@/components/LoadingBox.tsx";
 
 export default function Home() {
     const { data, isError, error } = useQuery<PageWithChildren[], Error>(
@@ -14,7 +15,9 @@ export default function Home() {
     );
     dayjs.extend(relativeTime);
 
-    if (isError || !data) return <ErrorPage error={error?.message} />;
+    if (isError) return <ErrorPage message={error?.message} />;
+
+    if (!data) return <LoadingBox />;
 
     return (
         <>

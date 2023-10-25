@@ -4,6 +4,7 @@ import { pageRoute } from "@/main.tsx";
 import { Helmet } from "react-helmet";
 import ErrorPage from "@/components/Error.tsx";
 import { Page } from "prisma/prisma-client";
+import { LoadingBox } from "@/components/LoadingBox.tsx";
 
 const Page: (typeof pageRoute)["options"]["component"] = ({
     useRouteContext,
@@ -11,12 +12,14 @@ const Page: (typeof pageRoute)["options"]["component"] = ({
     const { queryOptions } = useRouteContext();
     const { data, isError, error } = useQuery<Page, Error>(queryOptions);
 
-    if (isError || !data) return <ErrorPage error={error?.message} />;
+    if (isError) return <ErrorPage message={error?.message} />;
+
+    if (!data) return <LoadingBox />;
 
     return (
         <>
             <Helmet>
-                <title>{data?.title ?? "Page not found"} - Solitude</title>
+                <title>{data.title} - Solitude</title>
             </Helmet>
             <Editor {...data} />
         </>

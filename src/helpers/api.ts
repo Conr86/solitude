@@ -9,7 +9,13 @@ function fetchPages(): Promise<PageWithChildren[]> {
 }
 
 function fetchPageById(pageId: string): Promise<Page> {
-    return axios.get(`${apiBaseUrl}/page/${pageId}`).then((r) => r.data);
+    return axios
+        .get(`${apiBaseUrl}/page/${pageId}`)
+        .then((r) => r.data)
+        .catch((error) => {
+            // Prefer error message from server if available
+            throw new Error(error.response.data?.message ?? error.message);
+        });
 }
 
 export const pageListQuery = {
