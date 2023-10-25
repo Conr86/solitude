@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet";
 import ErrorPage from "@/components/Error.tsx";
 import { PageWithChildren } from "@/helpers/CustomTreeDataProvider.ts";
 
-export default function Index() {
+export default function Home() {
     const query = pageListQuery();
     const { data, isError, error } = useQuery<PageWithChildren[], Error>(
         query.queryKey,
@@ -16,7 +16,6 @@ export default function Index() {
     );
     dayjs.extend(relativeTime);
 
-    // const pagesCount = data.length;
     if (isError || !data) return <ErrorPage error={error?.message} />;
 
     return (
@@ -69,7 +68,7 @@ export default function Index() {
                 </div>
                 {/* <div className="block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Stats</h5>
-          <p className="my-3 text-lg text-gray-500 md:text-xl dark:text-gray-400">Pages <span className="text-xl">{pagesCount}</span></p>
+          <p className="my-3 text-lg text-gray-500 md:text-xl dark:text-gray-400">Pages <span className="text-xl">{data.length}</span></p>
           <hr/>
           <p className="my-3 text-lg text-gray-500 md:text-xl dark:text-gray-400">Pages <span className="text-xl">{pagesCount}</span></p>
           <hr/>

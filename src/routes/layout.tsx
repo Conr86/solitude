@@ -8,23 +8,27 @@ import {
     FaChevronRight,
     FaChevronDown,
     FaExclamationTriangle,
+    FaInfoCircle,
 } from "react-icons/fa";
 import { type Page } from "@prisma/client";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
     InteractionMode,
     Tree,
     UncontrolledTreeEnvironment,
 } from "react-complex-tree";
 import { CustomTreeDataProvider } from "@/helpers/CustomTreeDataProvider";
-import { pageListQuery } from "@/helpers/api.ts";
 import { Outlet, useMatches } from "@tanstack/react-router";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { pageListQuery } from "@/helpers/api.ts";
+import SidebarError from "@/components/SidebarError.tsx";
+import { Menu, Transition } from "@headlessui/react";
+import classNames from "classnames";
+import DarkModeSwitcher from "@/components/DarkModeSwitcher.tsx";
 
 export default function Layout() {
     const { data, isError } = useQuery(pageListQuery());
     const location = useMatches();
-
     const pageId =
         location[1]?.routeId === "/page/$pageId"
             ? location[1].params["pageId"]
@@ -34,7 +38,7 @@ export default function Layout() {
     const [sidebarVisible, setSidebarVisible] = useState(true);
 
     // Cache CustomTreeDataProvider until the data changes, prevents recreating whenever use selects page
-    // Data will automatically change if swr's mutate() is called on the /page endpoint
+    // Data will automatically change if /page is invalidated
     const dataProvider = useMemo(
         () => new CustomTreeDataProvider(data, queryClient),
         [data, queryClient],
@@ -55,35 +59,7 @@ export default function Layout() {
         [dataProvider, pageId],
     );
 
-    // if (error) return <Error statusCode={error.statusCode}/>
-
-    if (isError || !data)
-        return (
-            <>
-                <aside
-                    id="sidebar-multi-level-sidebar"
-                    className={`${
-                        sidebarVisible ? "translate-x-0" : "-translate-x-full"
-                    } fixed top-0 left-0 z-40 w-64 h-screen transition-transform duration-300 ease-in-out`}
-                    aria-label="Sidebar"
-                >
-                    <div className="h-full overflow-y-auto bg-secondary-100 dark:bg-secondary-800">
-                        <div className="flex h-screen w-full justify-center items-center">
-                            <img
-                                className="animate-pulse mx-auto float-center w-1/2 "
-                                src="/logo.svg"
-                                alt="Solitude Logo"
-                                width={100}
-                                height={100}
-                            />
-                        </div>
-                    </div>
-                </aside>
-                <div className="container w-full md:max-w-3xl mx-auto px-10 py-20">
-                    <Outlet />
-                </div>
-            </>
-        );
+    if (isError || !data) return <SidebarError />;
 
     return (
         <div>
@@ -121,11 +97,42 @@ export default function Layout() {
                             >
                                 Solitude
                             </h1>
-                            <button
-                                className={`p-2 rounded-full dark:text-white hover:ring-1 ml-auto`}
-                            >
-                                <BsThreeDotsVertical />
-                            </button>
+                            <Menu as="div" className="ml-auto">
+                                <Menu.Button
+                                    className={`p-2 rounded-full dark:text-white hover:ring-1`}
+                                >
+                                    <BsThreeDotsVertical />
+                                </Menu.Button>
+                                <Transition
+                                    as={Fragment}
+                                    enter="transition ease-out duration-100"
+                                    enterFrom="transform opacity-0 scale-95"
+                                    enterTo="transform opacity-100 scale-100"
+                                    leave="transition ease-in duration-75"
+                                    leaveFrom="transform opacity-100 scale-100"
+                                    leaveTo="transform opacity-0 scale-95"
+                                >
+                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                        <DarkModeSwitcher />
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <a
+                                                    href="https://www.github.com/Conr86/solitude"
+                                                    className={classNames(
+                                                        active
+                                                            ? "bg-gray-100 text-gray-900"
+                                                            : "text-gray-700",
+                                                        "px-4 py-2 text-sm flex rounded-md",
+                                                    )}
+                                                >
+                                                    <FaInfoCircle className="my-1 mr-4" />
+                                                    About
+                                                </a>
+                                            )}
+                                        </Menu.Item>
+                                    </Menu.Items>
+                                </Transition>
+                            </Menu>
                         </div>
                         {/* Home & New Page */}
                         <ul className="space-y-2 font-medium">

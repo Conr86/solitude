@@ -1,7 +1,7 @@
 import Editor from "@/components/Editor.tsx";
 import { Helmet } from "react-helmet";
 
-const NewPage = () => {
+export default function NewPage() {
     return (
         <>
             <Helmet>
@@ -10,6 +10,4 @@ const NewPage = () => {
             <Editor title={"New Page"} content={""} />
         </>
     );
-};
-
-export default NewPage;
+}

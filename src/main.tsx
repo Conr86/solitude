@@ -1,10 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import Layout from "./routes/layout.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import Index from "@/routes";
+import Home from "@/routes/home.tsx";
 import New from "@/routes/new.tsx";
 import {
     lazyRouteComponent,
@@ -15,30 +14,21 @@ import {
 } from "@tanstack/react-router";
 import "@fontsource/libre-baskerville";
 import "@fontsource/libre-baskerville/700.css";
-import { pageByIdQuery, pageListQuery } from "@/helpers/api.ts";
+import Layout from "@/routes/layout.tsx";
+import { pageByIdQuery } from "@/helpers/api.ts";
 
 const queryClient = new QueryClient();
-
 const routerContext = new RouterContext<{
     queryClient: typeof queryClient;
 }>();
 
-const rootRoute = routerContext.createRootRoute({
+export const rootRoute = routerContext.createRootRoute({
     component: Layout,
-    // beforeLoad: () => {
-    //     return { queryOptions: pageListQuery() };
-    // },
-    // loader: async ({
-    //     context: { queryClient },
-    //     routeContext: { queryOptions },
-    // }) => {
-    //     await queryClient.ensureQueryData(queryOptions);
-    // },
 });
-export const indexRoute = new Route({
+export const homeRoute = new Route({
     getParentRoute: () => rootRoute,
     path: "/",
-    component: Index,
+    component: Home,
 });
 export const newRoute = new Route({
     getParentRoute: () => rootRoute,
@@ -51,20 +41,11 @@ export const pageRoute = new Route({
     beforeLoad: ({ params: { pageId } }) => {
         return { queryOptions: pageByIdQuery(pageId) };
     },
-    loader: async ({
-        context: { queryClient },
-        routeContext: { queryOptions },
-    }) => {
-        await queryClient.ensureQueryData({
-            queryKey: queryOptions.queryKey,
-            queryFn: queryOptions.queryFn,
-        });
-    },
 }).update({
     component: lazyRouteComponent(() => import("./routes/page")),
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, newRoute, pageRoute]);
+const routeTree = rootRoute.addChildren([homeRoute, newRoute, pageRoute]);
 
 declare module "@tanstack/react-router" {
     interface Register {
