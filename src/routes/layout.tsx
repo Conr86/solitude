@@ -11,7 +11,7 @@ import {
     FaInfoCircle,
 } from "react-icons/fa";
 import { type Page } from "@prisma/client";
-import { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useMemo, useState } from "react";
 import {
     InteractionMode,
     Tree,
@@ -281,7 +281,16 @@ export default function Layout() {
                                     containerProps,
                                 }) => <ul {...containerProps}>{children}</ul>}
                                 renderItemArrow={({ item, context }) => (
-                                    <span {...context.arrowProps}>
+                                    <span
+                                        {...context.arrowProps}
+                                        onClick={(
+                                            event: React.MouseEvent<HTMLSpanElement>,
+                                        ) => {
+                                            event.preventDefault();
+                                            context.arrowProps.onClick?.(event);
+                                        }}
+                                        className="-my-2 p-2 inline-flex"
+                                    >
                                         {item.children?.length != 0 ? (
                                             context.isExpanded ? (
                                                 <FaChevronDown />

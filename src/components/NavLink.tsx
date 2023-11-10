@@ -48,7 +48,7 @@ export const NavLink = ({
                     <span className="flex-1 text-left w-max ml-3 line-clamp-1">
                         {label}
                     </span>
-                    {arrow && <span className="pr-1">{arrow}</span>}
+                    {arrow}
                 </>
             )}
         </Link>
