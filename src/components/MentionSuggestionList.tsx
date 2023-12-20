@@ -59,20 +59,21 @@ export const MentionSuggestionList = forwardRef<
 
     return (
         <div
-            className={`bg-secondary-100 rounded-md shadow-md overflow-hidden relative`}
+            className={`bg-secondary-100 dark:bg-secondary-800 rounded-md shadow-md overflow-hidden relative`}
         >
             {props.items.length ? (
                 props.items.map((item: NameUrlPair, index: number) => (
                     <button
-                        className={`flex items-center border rounded-md text-left px-2 py-2 w-full ${
-                            index === selectedIndex
-                                ? "bg-primary-300 dark:bg-primary-800 dark:text-secondary-100"
-                                : "border-transparent"
+                        className={`flex items-center rounded-md text-left px-2 py-2 w-full text-gray-900 dark:text-gray-400  ${
+                            index === selectedIndex &&
+                            "bg-gray-200 dark:text-white dark:bg-gray-700"
                         }`}
                         key={index}
                         onClick={() => selectItem(index)}
                     >
-                        <FaFile className={`w-6 transition duration-75 `} />
+                        <FaFile
+                            className={`w-6 transition duration-75 text-gray-500 dark:text-gray-400`}
+                        />
                         <span className="flex-1 text-left w-max ml-2 line-clamp-1">
                             {item.name}
                         </span>
