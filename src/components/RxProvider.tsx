@@ -1,7 +1,7 @@
 import { useState, useEffect, ReactNode } from "react";
 import { Provider } from "rxdb-hooks";
-import initialize from "../helpers/database";
-import { Database } from "@/helpers/schema.ts";
+import initialize from "../helpers/db/database.ts";
+import { Database } from "@/helpers/db/schema.ts";
 
 const RxProvider = ({ children }: { children: ReactNode }) => {
     const [db, setDb] = useState<Database>();

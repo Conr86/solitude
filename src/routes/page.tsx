@@ -3,7 +3,7 @@ import { pageRoute } from "@/main.tsx";
 import { Helmet } from "react-helmet";
 import ErrorPage from "@/components/Error.tsx";
 import { LoadingBox } from "@/components/LoadingBox.tsx";
-import { usePage } from "@/helpers/databaseHooks.ts";
+import { usePage } from "@/helpers/db/databaseHooks.ts";
 
 const Page = () => {
     const { pageId } = pageRoute.useParams();

@@ -3,8 +3,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { Link } from "@tanstack/react-router";
 import { Helmet } from "react-helmet";
 import { LoadingBox } from "@/components/LoadingBox.tsx";
-import { Page } from "@/helpers/schema.ts";
-import { usePages } from "@/helpers/databaseHooks.ts";
+import { Page } from "@/helpers/db/schema.ts";
+import { usePages } from "@/helpers/db/databaseHooks.ts";
 
 export default function Home() {
     const { pages, isFetching } = usePages();

@@ -14,11 +14,11 @@ import {
     pageStateReducer,
 } from "@/helpers/pageStateReducer";
 import { getEditorProps, getExtensions } from "@/helpers/tiptap.config";
-import { Page } from "@/helpers/schema.ts";
+import { Page } from "@/helpers/db/schema.ts";
 import { useRxCollection } from "rxdb-hooks";
 import cuid from "cuid";
 import { useNavigate, useRouter } from "@tanstack/react-router";
-import { usePage, usePages } from "@/helpers/databaseHooks.ts";
+import { usePage, usePages } from "@/helpers/db/databaseHooks.ts";
 import { downloadMarkdownExport } from "@/helpers/markdownExport.ts";
 import { BsThreeDotsVertical } from "react-icons/bs";
 

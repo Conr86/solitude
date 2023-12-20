@@ -4,7 +4,7 @@ import {
     TreeItem,
     TreeItemIndex,
 } from "react-complex-tree";
-import { Page } from "@/helpers/schema.ts";
+import { Page } from "@/helpers/db/schema.ts";
 import { RxCollection } from "rxdb";
 
 /*

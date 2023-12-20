@@ -12,7 +12,7 @@ export default function DarkModeSwitcher() {
                 ["dark", FaRegMoon],
                 ["light", FaSun],
             ].map(([mode, Icon]) => (
-                <Menu.Item>
+                <Menu.Item key={mode}>
                     {({ active }) => (
                         <button
                             type="button"
@@ -21,7 +21,7 @@ export default function DarkModeSwitcher() {
                                 `flex justify-center grow p-3 first:rounded-tl-md last:rounded-tr-md`,
                                 {
                                     "bg-secondary-100": active,
-                                    "bg-primary-100 text-primary-800":
+                                    "bg-primary-200 text-primary-800":
                                         activeTheme === mode,
                                 },
                             )}

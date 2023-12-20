@@ -16,29 +16,26 @@ import {
     UncontrolledTreeEnvironment,
 } from "react-complex-tree";
 import { CustomTreeDataProvider } from "@/helpers/CustomTreeDataProvider";
-import { Outlet, useMatches } from "@tanstack/react-router";
+import { Outlet, useMatches, useParams } from "@tanstack/react-router";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import DarkModeSwitcher from "@/components/DarkModeSwitcher.tsx";
-import { Page } from "@/helpers/schema.ts";
-import { usePages } from "@/helpers/databaseHooks.ts";
+import { Page } from "@/helpers/db/schema.ts";
+import { usePages } from "@/helpers/db/databaseHooks.ts";
 import { useRxCollection } from "rxdb-hooks";
+import SidebarError from "@/components/SidebarError.tsx";
 
 export default function Layout() {
-    const { pages } = usePages();
+    const { pages, isFetching } = usePages();
     const collection = useRxCollection<Page>("pages");
 
     const location = useMatches();
-    const pageId =
-        location[1]?.routeId === "/page/$pageId"
-            ? location[1].params["pageId"]
-            : 0;
+    const { pageId } = useParams({ strict: false });
     const [filterText, setFilterText] = useState("");
     const [sidebarVisible, setSidebarVisible] = useState(true);
 
     // Cache CustomTreeDataProvider until the data changes, prevents recreating whenever use selects page
-    // Data will automatically change if /page is invalidated
     const dataProvider = useMemo(
         () => new CustomTreeDataProvider(pages, collection),
         [pages, collection],
@@ -47,7 +44,7 @@ export default function Layout() {
     // Generate initial state of tree by creating linear path from active item to root
     const initialState = useMemo(
         () =>
-            isNaN(pageId)
+            pageId === ""
                 ? {}
                 : {
                       ["tree-nav"]: {
@@ -59,7 +56,7 @@ export default function Layout() {
         [dataProvider, pageId],
     );
 
-    // if (isError || !data) return <SidebarError />;
+    if (!pages || isFetching) return <SidebarError />;
 
     return (
         <div>
