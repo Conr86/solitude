@@ -9,7 +9,7 @@ import {
     FaInfoCircle,
     FaCog,
 } from "react-icons/fa";
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useContext, useMemo, useState } from "react";
 import {
     InteractionMode,
     Tree,
@@ -26,10 +26,12 @@ import { usePages } from "@/lib/db/databaseHooks.ts";
 import { useRxCollection } from "rxdb-hooks";
 import SidebarError from "@/components/SidebarError.tsx";
 import SyncPanel from "@/components/SyncPanel.tsx";
+import { ReplicatorContext } from "@/components/RxProvider.tsx";
 
 export default function Layout() {
     const { pages, isFetching } = usePages();
     const collection = useRxCollection<Page>("pages");
+    const replication = useContext(ReplicatorContext);
 
     const { pageId } = useParams({ strict: false });
     const [filterText, setFilterText] = useState("");
@@ -301,7 +303,7 @@ export default function Layout() {
                         </div>
                     </div>
                     <div className="z-20 mt-auto flex flex-col space-y-0.5 px-4 py-4">
-                        <SyncPanel />
+                        {replication && <SyncPanel />}
                     </div>
                 </aside>
             </div>
