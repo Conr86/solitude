@@ -6,7 +6,6 @@ import {
     FaTimes,
     FaChevronRight,
     FaChevronDown,
-    FaExclamationTriangle,
     FaInfoCircle,
 } from "react-icons/fa";
 import React, { Fragment, useMemo, useState } from "react";
@@ -16,7 +15,7 @@ import {
     UncontrolledTreeEnvironment,
 } from "react-complex-tree";
 import { CustomTreeDataProvider } from "@/helpers/CustomTreeDataProvider";
-import { Outlet, useMatches, useParams } from "@tanstack/react-router";
+import { Outlet, useParams } from "@tanstack/react-router";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
@@ -30,7 +29,6 @@ export default function Layout() {
     const { pages, isFetching } = usePages();
     const collection = useRxCollection<Page>("pages");
 
-    const location = useMatches();
     const { pageId } = useParams({ strict: false });
     const [filterText, setFilterText] = useState("");
     const [sidebarVisible, setSidebarVisible] = useState(true);
@@ -144,24 +142,6 @@ export default function Layout() {
                                 />
                             </li>
                         </ul>
-                        {/* New Page warning */}
-                        {location[1]?.pathname === "/new" && (
-                            <div
-                                id="dropdown-cta"
-                                className="p-4 mt-6 rounded-lg dark:bg-secondary-700 border-2 border-amber-500 dark:border-orange-200"
-                                role="alert"
-                            >
-                                <div className="flex items-center mb-3">
-                                    <span className="inline-flex"></span>
-                                </div>
-                                <p className="mb-3 text-sm text-gray-700 dark:text-white">
-                                    <FaExclamationTriangle className="inline-flex text-amber-500 dark:text-orange-200 mr-2 w-4 h-4" />
-                                    You&apos;re currently working on an unsaved
-                                    draft. Make sure to press the save button if
-                                    you want to keep your work.
-                                </p>
-                            </div>
-                        )}
                         {/* Search */}
                         <ul className="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
                             <div className="flex items-center mb-2">
