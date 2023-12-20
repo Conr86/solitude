@@ -18,13 +18,7 @@ const Page = () => {
             <Helmet>
                 <title>{page.title} - Solitude</title>
             </Helmet>
-            <Editor
-                id={page.id}
-                title={page.title}
-                content={page.content}
-                createdAt={page.createdAt}
-                updatedAt={page.updatedAt}
-            />
+            <Editor pageId={pageId} />
         </>
     );
 };

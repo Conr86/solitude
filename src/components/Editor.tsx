@@ -16,27 +16,35 @@ import {
 import { getEditorProps, getExtensions } from "@/helpers/tiptap.config";
 import { Page } from "@/helpers/db/schema.ts";
 import { useRxCollection } from "rxdb-hooks";
-import cuid from "cuid";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { usePage, usePages } from "@/helpers/db/databaseHooks.ts";
 import { downloadMarkdownExport } from "@/helpers/markdownExport.ts";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 export default function EditorComponent({
-    id,
-    title = "New Page",
-    createdAt,
-    updatedAt,
-    content = "",
-}: Partial<Page>) {
+    pageId,
+    isNewPage,
+}: {
+    pageId: string;
+    isNewPage?: boolean;
+}) {
     const navigate = useNavigate();
     const router = useRouter();
-    // Check if the page is new (id not set)
-    const isNewPage = !id;
 
     const collection = useRxCollection<Page>("pages");
     const { pages } = usePages();
-    const { page: activeDocument } = usePage(id ?? "");
+    const { page: activeDocument } = usePage(pageId);
+
+    // Redirect to the new URL if we have created and saved a new page
+    useEffect(() => {
+        if (isNewPage && activeDocument) {
+            navigate({
+                from: "/new",
+                to: "/page/$pageId",
+                params: { pageId },
+            });
+        }
+    }, [isNewPage, navigate, activeDocument, pageId]);
 
     // State for controlling display-related values
     const [displayState, setDisplayState] = useState({
@@ -48,23 +56,27 @@ export default function EditorComponent({
     const [page, dispatch] = useReducer<
         (state: PageState, action: PageAction) => PageState
     >(pageStateReducer, {
-        lastSaved: updatedAt ? new Date(updatedAt) : undefined,
+        lastSaved: activeDocument?.updatedAt
+            ? new Date(activeDocument?.updatedAt)
+            : undefined,
         unsavedChanges: false,
-        currentText: content ?? undefined,
-        lastText: content ?? undefined,
-        currentTitle: title,
-        lastTitle: title,
+        currentText: activeDocument?.content,
+        lastText: activeDocument?.content,
+        currentTitle: activeDocument?.title ?? "New Page",
+        lastTitle: activeDocument?.title ?? "New Page",
     });
 
     // Update state when content/title changes such as a query refetch
     useEffect(() => {
         dispatch({
             type: "opened",
-            newTitle: title,
-            newText: content ?? undefined,
-            newLastSaved: updatedAt ? new Date(updatedAt) : undefined,
+            newTitle: activeDocument?.title ?? "New Page",
+            newText: activeDocument?.content,
+            newLastSaved: activeDocument?.updatedAt
+                ? new Date(activeDocument?.updatedAt)
+                : undefined,
         });
-    }, [content, title, updatedAt]);
+    }, [activeDocument]);
 
     // Extend dayjs with relativeTime plugin
     // relativeTime lets use calculate "Saved two days ago..." from two dates
@@ -97,9 +109,8 @@ export default function EditorComponent({
     // Create a page with current editor contents and title and redirect to that new page
     const createPage = useCallback(
         async (page: PageState) => {
-            const id = cuid();
-            const result = await collection?.upsert({
-                id,
+            await collection?.incrementalUpsert({
+                id: pageId,
                 title: page.currentTitle,
                 content: page.currentText,
             });
@@ -107,15 +118,8 @@ export default function EditorComponent({
             dispatch({
                 type: "saved",
             });
-            if (result) {
-                // Redirect to the new page
-                await navigate({
-                    to: "/page/$pageId",
-                    params: { pageId: result.id },
-                });
-            }
         },
-        [collection, navigate],
+        [collection, pageId],
     );
 
     // Save page content from given page state for given id
@@ -142,27 +146,23 @@ export default function EditorComponent({
             // Check if there are unsaved changes in the editor
             if (page.unsavedChanges) {
                 console.log(`Autosaving...`);
-                savePage(id, page);
+                savePage(pageId, page);
             }
         }, AUTOSAVE_INTERVAL);
         // Clean up the timer when the component unmounts or the dependencies change
         return () => {
             clearTimeout(timer);
         };
-    }, [page, id, isNewPage, savePage]);
+    }, [page, pageId, isNewPage, savePage]);
 
     // Save on exit
     useEffect(() => {
         if (!page.unsavedChanges) return;
-
-        const unblock = router.history.block((retry) => {
-            if (window.confirm("Save unsaved changes?")) {
-                console.log("Saving unsaved changes...");
-                if (!isNewPage) savePage(id, page);
-                else createPage(page);
-                unblock();
-                retry();
-            }
+        const unblock = router.history.block(async (retry) => {
+            if (!isNewPage) savePage(pageId, page);
+            else await createPage(page);
+            unblock();
+            retry();
         });
         return unblock;
     });
@@ -172,14 +172,14 @@ export default function EditorComponent({
         {
             extensions: getExtensions(pages),
             editorProps: getEditorProps(),
-            content,
+            content: activeDocument?.content,
             onUpdate: ({ editor }) =>
                 dispatch({
                     type: "changed",
                     newText: editor.getHTML(),
                 }),
         },
-        [id, content, title],
+        [pageId, activeDocument],
     );
 
     const buttonClasses =
@@ -205,10 +205,13 @@ export default function EditorComponent({
                 {/* Page info */}
                 <div className="text-gray-600 dark:text-gray-400">
                     <p>
-                        Created{" "}
-                        {createdAt
-                            ? new Date(createdAt).toLocaleString()
-                            : "just now"}
+                        {`Created ${
+                            activeDocument?.createdAt
+                                ? new Date(
+                                      activeDocument?.createdAt,
+                                  ).toLocaleString()
+                                : "just now"
+                        }`}
                     </p>
                     <p>
                         {!isNewPage
@@ -247,7 +250,9 @@ export default function EditorComponent({
                     <Button
                         color={buttonClasses}
                         onClick={() => {
-                            !isNewPage ? savePage(id, page) : createPage(page);
+                            !isNewPage
+                                ? savePage(pageId, page)
+                                : createPage(page);
                         }}
                     >
                         <FaSave className="mr-2" /> Save
