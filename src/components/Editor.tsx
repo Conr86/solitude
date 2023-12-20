@@ -199,7 +199,7 @@ export default function EditorComponent({
                     });
                 }}
                 style={{ fontFamily: "Libre Baskerville" }}
-                className={`font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-1 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`}
+                className={`w-full font-bold break-normal text-gray-900 dark:text-white px-0 py-2 my-1 text-3xl md:text-4xl rounded-md border-0 shadow-none outline-none focus:ring-0 bg-inherit`}
             ></input>
             <div className="flex gap-2 flex-row">
                 {/* Page info */}
