@@ -17,12 +17,19 @@ export default function SyncPanel() {
 
     // Subscribe to finished sync event
     useEffect(() => {
-        replication.awaitInSync().then(() => setSynced(new Date()));
-    }, [replication]);
+        if (online) replication.awaitInSync().then(() => setSynced(new Date()));
+    }, [replication, online]);
 
     // Sync when network reconnects
     useEffect(() => {
-        if (online) replication?.reSync();
+        if (!online) {
+            replication?.cancel();
+        } else if (replication?.isStopped()) {
+            // TODO: get this working without refreshing page
+            replication?.start();
+        } else {
+            replication?.reSync();
+        }
     }, [online, replication]);
 
     // Listen to events
