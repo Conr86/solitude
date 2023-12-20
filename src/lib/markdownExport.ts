@@ -1,5 +1,5 @@
 import { NodeHtmlMarkdown, TranslatorConfigObject } from "node-html-markdown";
-import { Page } from "@/helpers/db/schema.ts";
+import { Page } from "@/lib/db/schema.ts";
 
 export const ExportPageAsMarkdown = (page: Page) => {
     const header =

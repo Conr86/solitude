@@ -2,7 +2,7 @@ import { ReactRenderer } from "@tiptap/react";
 import tippy from "tippy.js";
 
 import MentionList from "../../../components/MentionSuggestionList";
-import { NameUrlPair } from "@/helpers/tiptap.config";
+import { NameUrlPair } from "@/lib/tiptap.config";
 import { SuggestionOptions } from "@tiptap/suggestion";
 
 export const MentionSuggestionRender: SuggestionOptions<NameUrlPair>["render"] =

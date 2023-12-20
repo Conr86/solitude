@@ -1,4 +1,4 @@
-import { NameUrlPair } from "@/helpers/tiptap.config";
+import { NameUrlPair } from "@/lib/tiptap.config";
 import { SuggestionProps } from "@tiptap/suggestion";
 import React, {
     forwardRef,

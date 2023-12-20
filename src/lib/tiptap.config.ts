@@ -12,7 +12,7 @@ import { MentionSuggestionRender } from "./extensions/mention/MentionSuggestionR
 import { Decorator } from "./extensions/decorator/Decorator";
 import { Quotes } from "./extensions/decorator/Quotes";
 import { Placeholder } from "@tiptap/extension-placeholder";
-import { Page } from "@/helpers/db/schema.ts";
+import { Page } from "@/lib/db/schema.ts";
 
 export interface NameUrlPair {
     name: string;

@@ -21,7 +21,7 @@ import {
     RiArrowGoForwardLine,
 } from "react-icons/ri";
 
-import { setLink } from "../helpers/extensions/setLink";
+import { setLink } from "@/lib/extensions/setLink";
 
 type ToolbarProps = {
     editor: Editor | null;

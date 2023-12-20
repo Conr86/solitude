@@ -1,7 +1,7 @@
 import { Menu } from "@headlessui/react";
 import classNames from "classnames";
 import { FaDesktop, FaRegMoon, FaSun } from "react-icons/fa";
-import { useTheme } from "@/helpers/useTheme.ts";
+import { useTheme } from "@/lib/useTheme.ts";
 
 export default function DarkModeSwitcher() {
     const { activeTheme, setActiveTheme } = useTheme();

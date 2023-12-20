@@ -3,7 +3,7 @@ import { MentionOptions } from "@tiptap/extension-mention";
 import { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { Link } from "@tanstack/react-router";
 import { useRxData } from "rxdb-hooks";
-import { Page } from "@/helpers/db/schema.ts";
+import { Page } from "@/lib/db/schema.ts";
 
 const MentionLink = (props: {
     options: MentionOptions;

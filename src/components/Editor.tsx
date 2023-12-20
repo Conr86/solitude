@@ -12,13 +12,13 @@ import {
     PageAction,
     PageState,
     pageStateReducer,
-} from "@/helpers/pageStateReducer";
-import { getEditorProps, getExtensions } from "@/helpers/tiptap.config";
-import { Page } from "@/helpers/db/schema.ts";
+} from "@/lib/pageStateReducer";
+import { getEditorProps, getExtensions } from "@/lib/tiptap.config";
+import { Page } from "@/lib/db/schema.ts";
 import { useRxCollection } from "rxdb-hooks";
 import { useNavigate, useRouter } from "@tanstack/react-router";
-import { usePage, usePages } from "@/helpers/db/databaseHooks.ts";
-import { downloadMarkdownExport } from "@/helpers/markdownExport.ts";
+import { usePage, usePages } from "@/lib/db/databaseHooks.ts";
+import { downloadMarkdownExport } from "@/lib/markdownExport.ts";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 export default function EditorComponent({

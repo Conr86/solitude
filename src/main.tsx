@@ -12,7 +12,7 @@ import {
 import "@fontsource/libre-baskerville";
 import "@fontsource/libre-baskerville/700.css";
 import Layout from "@/routes/layout.tsx";
-import { ThemeProvider } from "@/helpers/useTheme.ts";
+import { ThemeProvider } from "@/lib/useTheme.ts";
 import RxProvider from "@/components/RxProvider.tsx";
 import Page from "@/routes/page.tsx";
 

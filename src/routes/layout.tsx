@@ -14,14 +14,14 @@ import {
     Tree,
     UncontrolledTreeEnvironment,
 } from "react-complex-tree";
-import { CustomTreeDataProvider } from "@/helpers/CustomTreeDataProvider";
+import { CustomTreeDataProvider } from "@/lib/CustomTreeDataProvider";
 import { Outlet, useParams } from "@tanstack/react-router";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import DarkModeSwitcher from "@/components/DarkModeSwitcher.tsx";
-import { Page } from "@/helpers/db/schema.ts";
-import { usePages } from "@/helpers/db/databaseHooks.ts";
+import { Page } from "@/lib/db/schema.ts";
+import { usePages } from "@/lib/db/databaseHooks.ts";
 import { useRxCollection } from "rxdb-hooks";
 import SidebarError from "@/components/SidebarError.tsx";
 

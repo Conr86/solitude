@@ -1,5 +1,5 @@
 import { useRxData } from "rxdb-hooks";
-import { Page } from "@/helpers/db/schema.ts";
+import { Page } from "@/lib/db/schema.ts";
 import { RxDocument } from "rxdb";
 import { QueryConstructor } from "rxdb-hooks/dist/useRxData";
 import { useCallback, useMemo } from "react";
