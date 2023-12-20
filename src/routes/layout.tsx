@@ -148,16 +148,14 @@ export default function Layout() {
                         {location[1]?.pathname === "/new" && (
                             <div
                                 id="dropdown-cta"
-                                className="p-4 mt-6 rounded-lg bg-secondary-200 dark:bg-secondary-700"
+                                className="p-4 mt-6 rounded-lg dark:bg-secondary-700 border-2 border-amber-500 dark:border-orange-200"
                                 role="alert"
                             >
                                 <div className="flex items-center mb-3">
-                                    <span className="flex text-sm font-semibold mr-2 px-4 py-1 rounded bg-red-500 dark:bg-orange-200 dark:text-orange-900">
-                                        <FaExclamationTriangle className="mr-2 my-0.5" />
-                                        Warning
-                                    </span>
+                                    <span className="inline-flex"></span>
                                 </div>
                                 <p className="mb-3 text-sm text-gray-700 dark:text-white">
+                                    <FaExclamationTriangle className="inline-flex text-amber-500 dark:text-orange-200 mr-2 w-4 h-4" />
                                     You&apos;re currently working on an unsaved
                                     draft. Make sure to press the save button if
                                     you want to keep your work.
