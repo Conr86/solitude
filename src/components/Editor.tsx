@@ -76,7 +76,7 @@ export default function EditorComponent({
                 ? new Date(activeDocument?.updatedAt)
                 : undefined,
         });
-    }, [activeDocument]);
+    }, [activeDocument, isNewPage]);
 
     // Extend dayjs with relativeTime plugin
     // relativeTime lets use calculate "Saved two days ago..." from two dates
