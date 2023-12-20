@@ -16,6 +16,7 @@
     "@fontsource/libre-baskerville": "^5.0.8",
     "@headlessui/react": "^1.7.17",
     "@prisma/client": "^5.5.0",
+    "@supabase/supabase-js": "^2.39.1",
     "@tailwindcss/typography": "^0.5.10",
     "@tanstack/react-router": "^0.0.1-beta.191",
     "@tiptap/extension-character-count": "^2.1.11",
@@ -33,7 +34,9 @@
     "@tiptap/suggestion": "^2.1.11",
     "@types/react-dom": "^18.2.7",
     "@types/react-helmet": "^6.1.7",
+    "@uidotdev/usehooks": "^2.4.1",
     "classnames": "^2.3.2",
+    "clsx": "^2.0.0",
     "cuid": "^3.0.0",
     "dayjs": "^1.11.10",
     "fastify": "^4.24.0",
@@ -47,7 +50,9 @@
     "react-icons": "^4.11.0",
     "rxdb": "^14.17.1",
     "rxdb-hooks": "^5.0.2",
-    "rxjs": "^7.8.1"
+    "rxdb-supabase": "^1.0.4",
+    "rxjs": "^7.8.1",
+    "tailwind-merge": "^2.1.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.4.0",

@@ -50,7 +50,7 @@ export default function Home() {
                                         </th>
                                         <td className="px-6 py-4">
                                             {dayjs().from(
-                                                dayjs(page.updatedAt),
+                                                dayjs(page.updated_at),
                                                 true,
                                             )}{" "}
                                             ago

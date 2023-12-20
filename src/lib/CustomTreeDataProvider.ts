@@ -38,8 +38,8 @@ export class CustomTreeDataProvider implements TreeDataProvider {
 
         this.data["root"].children = [
             ...Array.from(items)
-                .filter((p) => !p.parentId)
-                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                .filter((p) => !p.parent_id)
+                .sort((a, b) => (a.index ?? 0) - (b.index ?? 0))
                 .map((p) => p.id),
         ];
         this.data["root"].data = items[0];
@@ -50,8 +50,8 @@ export class CustomTreeDataProvider implements TreeDataProvider {
                 canMove: true,
                 isFolder: true,
                 children: items
-                    .filter((i) => i.parentId === p.id)
-                    ?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                    .filter((i) => i.parent_id === p.id)
+                    ?.sort((a, b) => (a.index ?? 0) - (b.index ?? 0))
                     .map((p) => p.id),
                 data: p,
                 canRename: false,
@@ -61,7 +61,7 @@ export class CustomTreeDataProvider implements TreeDataProvider {
 
     public getParentId(itemId: TreeItemIndex): TreeItemIndex | null {
         if (!this.data[itemId]) return null;
-        return this.data[itemId].data?.parentId || null;
+        return this.data[itemId].data?.parent_id || null;
     }
 
     public getLinearPathToRoot(itemId: TreeItemIndex): TreeItemIndex[] {
@@ -88,7 +88,7 @@ export class CustomTreeDataProvider implements TreeDataProvider {
             .exec();
         documents?.forEach((d) => {
             d.incrementalPatch({
-                order: newChildren.findIndex((c) => c === d.id),
+                index: newChildren.findIndex((c) => c === d.id),
             });
         });
     }
@@ -105,7 +105,7 @@ export class CustomTreeDataProvider implements TreeDataProvider {
 
     // public async onRenameItem(item: TreeItem<any>, name: string): Promise<void> {    }
 
-    public async updateParent(id: string, parentId: string | undefined) {
+    public async updateParent(id: string, parent_id: string | undefined) {
         const doc = await this.collection
             ?.findOne({
                 selector: {
@@ -114,7 +114,7 @@ export class CustomTreeDataProvider implements TreeDataProvider {
             })
             .exec();
         await doc?.incrementalPatch({
-            parentId,
+            parent_id,
         });
     }
 }

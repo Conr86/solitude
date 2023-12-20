@@ -56,8 +56,8 @@ export default function EditorComponent({
     const [page, dispatch] = useReducer<
         (state: PageState, action: PageAction) => PageState
     >(pageStateReducer, {
-        lastSaved: activeDocument?.updatedAt
-            ? new Date(activeDocument?.updatedAt)
+        lastSaved: activeDocument?.updated_at
+            ? new Date(activeDocument?.updated_at)
             : undefined,
         unsavedChanges: false,
         currentText: activeDocument?.content,
@@ -72,8 +72,8 @@ export default function EditorComponent({
             type: "opened",
             newTitle: isNewPage ? "New Page" : activeDocument?.title ?? "",
             newText: activeDocument?.content,
-            newLastSaved: activeDocument?.updatedAt
-                ? new Date(activeDocument?.updatedAt)
+            newLastSaved: activeDocument?.updated_at
+                ? new Date(activeDocument?.updated_at)
                 : undefined,
         });
     }, [activeDocument, isNewPage]);
@@ -206,9 +206,9 @@ export default function EditorComponent({
                 <div className="text-gray-600 dark:text-gray-400">
                     <p>
                         {`Created ${
-                            activeDocument?.createdAt
+                            activeDocument?.created_at
                                 ? new Date(
-                                      activeDocument?.createdAt,
+                                      activeDocument?.created_at,
                                   ).toLocaleString()
                                 : "just now"
                         }`}

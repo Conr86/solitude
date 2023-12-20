@@ -18,7 +18,7 @@ export default function DarkModeSwitcher() {
                             type="button"
                             onClick={() => setActiveTheme(mode)}
                             className={classNames(
-                                `flex justify-center grow p-3 first:rounded-tl-md last:rounded-tr-md`,
+                                `flex justify-center grow p-3 first:rounded-tl-md last:rounded-tr-md text-secondary-800`,
                                 {
                                     "bg-secondary-100": active,
                                     "bg-primary-200 text-primary-800":

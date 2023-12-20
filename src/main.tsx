@@ -15,6 +15,7 @@ import Layout from "@/routes/layout.tsx";
 import { ThemeProvider } from "@/lib/useTheme.ts";
 import RxProvider from "@/components/RxProvider.tsx";
 import Page from "@/routes/page.tsx";
+import Settings from "@/routes/settings.tsx";
 
 export const rootRoute = new RouterContext().createRootRoute({
     component: Layout,
@@ -29,13 +30,23 @@ export const newRoute = new Route({
     path: "new",
     component: New,
 });
+export const settingsRoute = new Route({
+    getParentRoute: () => rootRoute,
+    path: "settings",
+    component: Settings,
+});
 export const pageRoute = new Route({
     getParentRoute: () => rootRoute,
     path: "page/$pageId",
     component: Page,
 });
 
-const routeTree = rootRoute.addChildren([homeRoute, newRoute, pageRoute]);
+const routeTree = rootRoute.addChildren([
+    homeRoute,
+    newRoute,
+    pageRoute,
+    settingsRoute,
+]);
 
 declare module "@tanstack/react-router" {
     interface Register {

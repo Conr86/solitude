@@ -7,6 +7,7 @@ import {
     FaChevronRight,
     FaChevronDown,
     FaInfoCircle,
+    FaCog,
 } from "react-icons/fa";
 import React, { Fragment, useMemo, useState } from "react";
 import {
@@ -15,7 +16,7 @@ import {
     UncontrolledTreeEnvironment,
 } from "react-complex-tree";
 import { CustomTreeDataProvider } from "@/lib/CustomTreeDataProvider";
-import { Outlet, useParams } from "@tanstack/react-router";
+import { Link, Outlet, useParams } from "@tanstack/react-router";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
@@ -24,6 +25,7 @@ import { Page } from "@/lib/db/schema.ts";
 import { usePages } from "@/lib/db/databaseHooks.ts";
 import { useRxCollection } from "rxdb-hooks";
 import SidebarError from "@/components/SidebarError.tsx";
+import SyncPanel from "@/components/SyncPanel.tsx";
 
 export default function Layout() {
     const { pages, isFetching } = usePages();
@@ -124,6 +126,22 @@ export default function Layout() {
                                             </a>
                                         )}
                                     </Menu.Item>
+                                    <Menu.Item>
+                                        {({ active }) => (
+                                            <Link
+                                                to="/settings"
+                                                className={classNames(
+                                                    active
+                                                        ? "bg-gray-100 text-gray-900"
+                                                        : "text-gray-700",
+                                                    "px-4 py-2 text-sm flex rounded-md",
+                                                )}
+                                            >
+                                                <FaCog className="my-1 mr-4" />
+                                                Settings
+                                            </Link>
+                                        )}
+                                    </Menu.Item>
                                 </Menu.Items>
                             </Transition>
                         </Menu>
@@ -180,7 +198,7 @@ export default function Layout() {
                             </button>
                         </div>
                     </div>
-                    <div className="h-full overflow-y-scroll space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
+                    <div className="h-full overflow-y-auto space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
                         <div className="px-3">
                             {filterText != "" && (
                                 <ul className="pt-2 space-y-2">
@@ -210,7 +228,7 @@ export default function Layout() {
                                 <UncontrolledTreeEnvironment
                                     dataProvider={dataProvider}
                                     getItemTitle={(item) => item.data.title}
-                                    // getItemTitle={item => `${item.data.id}: ${item.data.title.slice(0, 10)} (${item.data.order})`}
+                                    // getItemTitle={item => `${item.data.id}: ${item.data.title.slice(0, 10)} (${item.data.index})`}
                                     viewState={initialState}
                                     canDragAndDrop={true}
                                     canDropOnFolder={true}
@@ -281,6 +299,9 @@ export default function Layout() {
                                 </UncontrolledTreeEnvironment>
                             )}
                         </div>
+                    </div>
+                    <div className="z-20 mt-auto flex flex-col space-y-0.5 px-4 py-4">
+                        <SyncPanel />
                     </div>
                 </aside>
             </div>

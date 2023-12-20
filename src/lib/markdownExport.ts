@@ -6,8 +6,8 @@ export const ExportPageAsMarkdown = (page: Page) => {
         `---\n` +
         `id: ${page.id}\n` +
         `title: ${page.title}\n` +
-        `created: ${page.createdAt}\n` +
-        `updated: ${page.updatedAt}\n` +
+        `created: ${page.created_at}\n` +
+        `updated: ${page.updated_at}\n` +
         `---\n\n`;
 
     const customTranslator: TranslatorConfigObject = {
