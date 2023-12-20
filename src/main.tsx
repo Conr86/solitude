@@ -1,12 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Home from "@/routes/home.tsx";
 import New from "@/routes/new.tsx";
 import {
-    lazyRouteComponent,
     Route,
     Router,
     RouterContext,
@@ -15,15 +12,11 @@ import {
 import "@fontsource/libre-baskerville";
 import "@fontsource/libre-baskerville/700.css";
 import Layout from "@/routes/layout.tsx";
-import { pageByIdQuery } from "@/helpers/api.ts";
 import { ThemeProvider } from "@/helpers/useTheme.ts";
+import RxProvider from "@/components/RxProvider.tsx";
+import Page from "@/routes/page.tsx";
 
-const queryClient = new QueryClient();
-const routerContext = new RouterContext<{
-    queryClient: typeof queryClient;
-}>();
-
-export const rootRoute = routerContext.createRootRoute({
+export const rootRoute = new RouterContext().createRootRoute({
     component: Layout,
 });
 export const homeRoute = new Route({
@@ -39,11 +32,7 @@ export const newRoute = new Route({
 export const pageRoute = new Route({
     getParentRoute: () => rootRoute,
     path: "page/$pageId",
-    beforeLoad: ({ params: { pageId } }) => {
-        return { queryOptions: pageByIdQuery(pageId) };
-    },
-}).update({
-    component: lazyRouteComponent(() => import("./routes/page")),
+    component: Page,
 });
 
 const routeTree = rootRoute.addChildren([homeRoute, newRoute, pageRoute]);
@@ -55,20 +44,14 @@ declare module "@tanstack/react-router" {
     }
 }
 
-const router = new Router({
-    routeTree,
-    context: {
-        queryClient,
-    },
-});
+const router = new Router({ routeTree });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <ThemeProvider>
-            <QueryClientProvider client={queryClient}>
+            <RxProvider>
                 <RouterProvider router={router} />
-                <ReactQueryDevtools position="bottom" />
-            </QueryClientProvider>
+            </RxProvider>
         </ThemeProvider>
     </React.StrictMode>,
 );

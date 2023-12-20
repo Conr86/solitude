@@ -4,9 +4,8 @@ import {
     TreeItem,
     TreeItemIndex,
 } from "react-complex-tree";
-import { Prisma } from "prisma/prisma-client";
-import { apiBaseUrl } from "@/helpers/api";
-import { QueryClient } from "@tanstack/react-query";
+import { Page } from "@/helpers/schema.ts";
+import { RxCollection } from "rxdb";
 
 /*
     Hacky modification of StaticTreeDataProvider that redraws the tree when the contents change.
@@ -17,23 +16,14 @@ import { QueryClient } from "@tanstack/react-query";
     Which is not something stored currently.
 */
 
-// Create PageWithChildren type
-const pageWithChildren = Prisma.validator<Prisma.PageDefaultArgs>()({
-    include: { children: { select: { id: true, order: true } } },
-});
-export type PageWithChildren = Prisma.PageGetPayload<typeof pageWithChildren>;
-
 export class CustomTreeDataProvider implements TreeDataProvider {
-    private readonly data: Record<
-        TreeItemIndex,
-        TreeItem<PageWithChildren | undefined>
-    >;
-    private queryClient: QueryClient;
+    private readonly data: Record<TreeItemIndex, TreeItem<Page | undefined>>;
+    private collection: RxCollection<Page> | null;
     constructor(
-        items: PageWithChildren[] | undefined,
-        queryClient: QueryClient,
+        items: Page[] | undefined,
+        collection: RxCollection<Page> | null,
     ) {
-        this.queryClient = queryClient;
+        this.collection = collection;
         this.data = {};
         this.data["root"] = {
             index: "root",
@@ -54,12 +44,13 @@ export class CustomTreeDataProvider implements TreeDataProvider {
         ];
         this.data["root"].data = items[0];
 
-        Array.from(items).forEach((p: PageWithChildren) => {
+        Array.from(items).forEach((p: Page) => {
             this.data[p.id] = {
                 index: p.id,
                 canMove: true,
                 isFolder: true,
-                children: p.children
+                children: items
+                    .filter((i) => i.parentId === p.id)
                     ?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
                     .map((p) => p.id),
                 data: p,
@@ -73,9 +64,9 @@ export class CustomTreeDataProvider implements TreeDataProvider {
         return this.data[itemId].data?.parentId || null;
     }
 
-    public getLinearPathToRoot(itemid: TreeItemIndex): TreeItemIndex[] {
+    public getLinearPathToRoot(itemId: TreeItemIndex): TreeItemIndex[] {
         const expandedItems: TreeItemIndex[] = [];
-        for (let id: TreeItemIndex | null = itemid; id != null && id != 0; ) {
+        for (let id: TreeItemIndex | null = itemId; id != null && id != 0; ) {
             expandedItems.push(id);
             id = this.getParentId(id);
             if (id != null && expandedItems.includes(id)) break;
@@ -92,20 +83,13 @@ export class CustomTreeDataProvider implements TreeDataProvider {
             `Item ${itemId} children changed, with new children: ` +
                 newChildren.toString(),
         );
-        await fetch(`${apiBaseUrl}/page/reorder`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(
-                newChildren.map((c: TreeItemIndex, i: number) => {
-                    return { id: c, order: i };
-                }),
-            ),
-        });
-        // Let SWR know that the page tree structure has changed and sidebar needs updating
-        await this.queryClient.invalidateQueries({
-            queryKey: ["pages"],
+        const documents = await this.collection
+            ?.findByIds(newChildren as string[])
+            .exec();
+        documents?.forEach((d) => {
+            d.incrementalPatch({
+                order: newChildren.findIndex((c) => c === d.id),
+            });
         });
     }
     public async getTreeItem(itemId: TreeItemIndex): Promise<TreeItem> {
@@ -121,22 +105,16 @@ export class CustomTreeDataProvider implements TreeDataProvider {
 
     // public async onRenameItem(item: TreeItem<any>, name: string): Promise<void> {    }
 
-    public async updateParent(
-        id: number,
-        parentConnectObj: Prisma.PageUpdateOneWithoutChildrenNestedInput,
-    ) {
-        await fetch(`${apiBaseUrl}/page/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                parent: parentConnectObj,
-            }),
-        });
-        // Let SWR know that the page tree structure has changed and sidebar needs updating
-        await this.queryClient.invalidateQueries({
-            queryKey: ["pages"],
+    public async updateParent(id: string, parentId: string | undefined) {
+        const doc = await this.collection
+            ?.findOne({
+                selector: {
+                    id,
+                },
+            })
+            .exec();
+        await doc?.incrementalPatch({
+            parentId,
         });
     }
 }

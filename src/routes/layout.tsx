@@ -1,4 +1,3 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { NavLink, TreeLink } from "@/components/NavLink.tsx";
 import {
     FaPlus,
@@ -10,7 +9,6 @@ import {
     FaExclamationTriangle,
     FaInfoCircle,
 } from "react-icons/fa";
-import { type Page } from "@prisma/client";
 import React, { Fragment, useMemo, useState } from "react";
 import {
     InteractionMode,
@@ -20,28 +18,30 @@ import {
 import { CustomTreeDataProvider } from "@/helpers/CustomTreeDataProvider";
 import { Outlet, useMatches } from "@tanstack/react-router";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { pageListQuery } from "@/helpers/api.ts";
-import SidebarError from "@/components/SidebarError.tsx";
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import DarkModeSwitcher from "@/components/DarkModeSwitcher.tsx";
+import { Page } from "@/helpers/schema.ts";
+import { usePages } from "@/helpers/databaseHooks.ts";
+import { useRxCollection } from "rxdb-hooks";
 
 export default function Layout() {
-    const { data, isError } = useQuery(pageListQuery);
+    const { pages } = usePages();
+    const collection = useRxCollection<Page>("pages");
+
     const location = useMatches();
     const pageId =
         location[1]?.routeId === "/page/$pageId"
             ? location[1].params["pageId"]
             : 0;
-    const queryClient = useQueryClient();
     const [filterText, setFilterText] = useState("");
     const [sidebarVisible, setSidebarVisible] = useState(true);
 
     // Cache CustomTreeDataProvider until the data changes, prevents recreating whenever use selects page
     // Data will automatically change if /page is invalidated
     const dataProvider = useMemo(
-        () => new CustomTreeDataProvider(data, queryClient),
-        [data, queryClient],
+        () => new CustomTreeDataProvider(pages, collection),
+        [pages, collection],
     );
 
     // Generate initial state of tree by creating linear path from active item to root
@@ -59,7 +59,7 @@ export default function Layout() {
         [dataProvider, pageId],
     );
 
-    if (isError || !data) return <SidebarError />;
+    // if (isError || !data) return <SidebarError />;
 
     return (
         <div>
@@ -217,8 +217,8 @@ export default function Layout() {
                         </ul>
                         {filterText != "" && (
                             <ul className="pt-2 space-y-2">
-                                {data
-                                    .filter((item: Page) =>
+                                {pages
+                                    ?.filter((item: Page) =>
                                         item.title
                                             .toLowerCase()
                                             .includes(filterText.toLowerCase()),
@@ -264,12 +264,8 @@ export default function Layout() {
                                             target.targetType ===
                                                 "between-items" &&
                                                 target.parentItem === "root"
-                                                ? { disconnect: true }
-                                                : {
-                                                      connect: {
-                                                          id: Number(targetId),
-                                                      },
-                                                  },
+                                                ? undefined
+                                                : targetId.toString(),
                                         );
                                     }
                                 }}

@@ -1,27 +1,26 @@
 import { useEditor, EditorContent } from "@tiptap/react";
-import { useEffect, useState, Fragment, useReducer } from "react";
+import { useEffect, useState, Fragment, useReducer, useCallback } from "react";
 import { Toolbar } from "./Toolbar";
 import { Button } from "../components/Button";
-import { FaAngleUp, FaCog, FaMarkdown, FaSave, FaTrash } from "react-icons/fa";
+import { FaAngleUp, FaMarkdown, FaSave, FaTrash } from "react-icons/fa";
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
-import { type Page } from "@prisma/client";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { DeleteModal } from "./DeleteModal";
-import { apiBaseUrl, pageListQuery } from "@/helpers/api";
 import {
     PageAction,
     PageState,
     pageStateReducer,
 } from "@/helpers/pageStateReducer";
 import { getEditorProps, getExtensions } from "@/helpers/tiptap.config";
-import {
-    useNavigate,
-    useRouter,
-    useRouterContext,
-} from "@tanstack/react-router";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { Page } from "@/helpers/schema.ts";
+import { useRxCollection } from "rxdb-hooks";
+import cuid from "cuid";
+import { useNavigate, useRouter } from "@tanstack/react-router";
+import { usePage, usePages } from "@/helpers/databaseHooks.ts";
+import { downloadMarkdownExport } from "@/helpers/markdownExport.ts";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 export default function EditorComponent({
     id,
@@ -30,14 +29,14 @@ export default function EditorComponent({
     updatedAt,
     content = "",
 }: Partial<Page>) {
-    const { data } = useQuery(pageListQuery);
     const navigate = useNavigate();
     const router = useRouter();
     // Check if the page is new (id not set)
     const isNewPage = !id;
-    const { queryClient } = useRouterContext({
-        from: isNewPage ? "/new" : "/page/$pageId",
-    });
+
+    const collection = useRxCollection<Page>("pages");
+    const { pages } = usePages();
+    const { page: activeDocument } = usePage(id ?? "");
 
     // State for controlling display-related values
     const [displayState, setDisplayState] = useState({
@@ -49,7 +48,7 @@ export default function EditorComponent({
     const [page, dispatch] = useReducer<
         (state: PageState, action: PageAction) => PageState
     >(pageStateReducer, {
-        lastSaved: updatedAt,
+        lastSaved: updatedAt ? new Date(updatedAt) : undefined,
         unsavedChanges: false,
         currentText: content ?? undefined,
         lastText: content ?? undefined,
@@ -63,7 +62,7 @@ export default function EditorComponent({
             type: "opened",
             newTitle: title,
             newText: content ?? undefined,
-            newLastSaved: updatedAt,
+            newLastSaved: updatedAt ? new Date(updatedAt) : undefined,
         });
     }, [content, title, updatedAt]);
 
@@ -90,91 +89,49 @@ export default function EditorComponent({
     };
 
     // Delete a page with the given ID
-    const deletePage = useMutation({
-        mutationKey: ["pages", id],
-        mutationFn: (id: number) => {
-            return fetch(`${apiBaseUrl}/page/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-        },
-        onSuccess: async () => {
-            // Let SWR know that the page tree structure has changed and sidebar needs updating
-            void queryClient.invalidateQueries({
-                queryKey: ["pages"],
-            });
-            // Redirect to Home
-            await navigate({ to: "/" });
-        },
-    });
+    const deletePage = useCallback(async () => {
+        activeDocument?.remove();
+        await navigate({ to: "/" });
+    }, [activeDocument, navigate]);
 
     // Create a page with current editor contents and title and redirect to that new page
-    const createPage = useMutation({
-        mutationKey: ["pages", id],
-        mutationFn: (page: PageState) =>
-            fetch(`${apiBaseUrl}/page`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title: page.currentTitle,
-                    content: page.currentText,
-                }),
-            }),
-        onSuccess: async (data) => {
-            console.log("Saved page. Redirecting...");
-            // Let SWR know that the page tree structure has changed and sidebar needs updating
-            void queryClient.invalidateQueries({
-                queryKey: ["pages"],
+    const createPage = useCallback(
+        async (page: PageState) => {
+            const id = cuid();
+            const result = await collection?.upsert({
+                id,
+                title: page.currentTitle,
+                content: page.currentText,
             });
             // Dispatch a 'saved' action to update the state. Stops the blocker from blocking.
             dispatch({
                 type: "saved",
             });
-            // Redirect to the new page
-            await navigate({
-                to: "/page/$pageId",
-                params: { pageId: (await data.json()).id },
-            });
-        },
-    });
-
-    // Save page content from given page state for given id
-    const savePage = useMutation({
-        mutationKey: ["pages", id],
-        mutationFn: async ({ id, page }: { id: number; page: PageState }) => {
-            // Note that we don't include modifiedAt as this is calculated automatically by the DB
-            await fetch(`${apiBaseUrl}/page/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title: page.currentTitle,
-                    content: page.currentText,
-                }),
-            });
-        },
-        onSuccess: async () => {
-            // Let the cache know that this page has changed
-            await queryClient.invalidateQueries({
-                queryKey: ["pages", id],
-            });
-            // Check if title has changed, if so, invalidate the page list cache triggering a refresh of the sidebar tree
-            if (page.currentTitle !== page.lastTitle) {
-                await queryClient.invalidateQueries({
-                    queryKey: ["pages"],
+            if (result) {
+                // Redirect to the new page
+                await navigate({
+                    to: "/page/$pageId",
+                    params: { pageId: result.id },
                 });
             }
-            // Dispatch a 'saved' action to update the state
+        },
+        [collection, navigate],
+    );
+
+    // Save page content from given page state for given id
+    const savePage = useCallback(
+        (id: string, page: PageState) => {
+            activeDocument?.patch({
+                id,
+                title: page.currentTitle,
+                content: page.currentText,
+            });
             dispatch({
                 type: "saved",
             });
         },
-    });
+        [activeDocument],
+    );
 
     // Autosave editor content
     const AUTOSAVE_INTERVAL: number = 3000;
@@ -183,12 +140,9 @@ export default function EditorComponent({
         // Set up a timer to automatically save the page after a certain interval
         const timer = setTimeout(() => {
             // Check if there are unsaved changes in the editor
-            if (
-                page.lastText !== page.currentText ||
-                page.lastTitle !== page.currentTitle
-            ) {
+            if (page.unsavedChanges) {
                 console.log(`Autosaving...`);
-                savePage.mutate({ id, page });
+                savePage(id, page);
             }
         }, AUTOSAVE_INTERVAL);
         // Clean up the timer when the component unmounts or the dependencies change
@@ -199,17 +153,13 @@ export default function EditorComponent({
 
     // Save on exit
     useEffect(() => {
-        if (
-            page.lastText === page.currentText &&
-            page.lastTitle === page.currentTitle
-        )
-            return;
+        if (!page.unsavedChanges) return;
 
         const unblock = router.history.block((retry) => {
             if (window.confirm("Save unsaved changes?")) {
                 console.log("Saving unsaved changes...");
-                if (!isNewPage) savePage.mutate({ id, page });
-                else createPage.mutate(page);
+                if (!isNewPage) savePage(id, page);
+                else createPage(page);
                 unblock();
                 retry();
             }
@@ -220,7 +170,7 @@ export default function EditorComponent({
     // Create editor
     const editor = useEditor(
         {
-            extensions: getExtensions(data),
+            extensions: getExtensions(pages),
             editorProps: getEditorProps(),
             content,
             onUpdate: ({ editor }) =>
@@ -271,7 +221,7 @@ export default function EditorComponent({
                     <p>{editor?.storage.characterCount.words()} words</p>
                 </div>
                 {/* Save button and settings */}
-                <div className="flex gap-2 h-10 grow flex-row place-content-end">
+                <div className="flex gap-3 h-10 grow flex-row place-content-end">
                     {/* Save indicator */}
                     <span
                         className="mr-2"
@@ -297,9 +247,7 @@ export default function EditorComponent({
                     <Button
                         color={buttonClasses}
                         onClick={() => {
-                            !isNewPage
-                                ? savePage.mutate({ id, page })
-                                : createPage.mutate(page);
+                            !isNewPage ? savePage(id, page) : createPage(page);
                         }}
                     >
                         <FaSave className="mr-2" /> Save
@@ -313,7 +261,7 @@ export default function EditorComponent({
                             <Menu.Button
                                 className={`inline-flex w-full justify-center rounded-full p-3 ${buttonClasses}`}
                             >
-                                <FaCog />
+                                <BsThreeDotsVertical />
                             </Menu.Button>
                             <Transition
                                 as={Fragment}
@@ -351,8 +299,12 @@ export default function EditorComponent({
                                         <Menu.Item>
                                             {({ active }) => (
                                                 <a
-                                                    href={`${apiBaseUrl}/page/${id}/export`}
-                                                    download
+                                                    href="#"
+                                                    onClick={() =>
+                                                        downloadMarkdownExport(
+                                                            activeDocument,
+                                                        )
+                                                    }
                                                     className={classNames(
                                                         active
                                                             ? "bg-gray-100 text-gray-900"
@@ -381,7 +333,7 @@ export default function EditorComponent({
                     onCancel={() => {
                         setDisplayState({ ...displayState, modalOpen: false });
                     }}
-                    onConfirm={() => deletePage.mutate(id)}
+                    onConfirm={() => deletePage()}
                 />
             )}
             <button

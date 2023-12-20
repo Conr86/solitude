@@ -9,14 +9,14 @@ import TableHeader from "@tiptap/extension-table-header";
 import TableRow from "@tiptap/extension-table-row";
 import { Mention } from "./extensions/mention/Mention";
 import { MentionSuggestionRender } from "./extensions/mention/MentionSuggestionRender";
-import { Page } from "prisma/prisma-client";
 import { Decorator } from "./extensions/decorator/Decorator";
 import { Quotes } from "./extensions/decorator/Quotes";
 import { Placeholder } from "@tiptap/extension-placeholder";
+import { Page } from "@/helpers/schema.ts";
 
 export interface NameUrlPair {
     name: string;
-    url: number;
+    url: string;
 }
 
 const itemsSearchFilter =

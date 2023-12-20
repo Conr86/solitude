@@ -1,23 +1,17 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Page } from "prisma/prisma-client";
-import { useQuery } from "@tanstack/react-query";
-import { pageListQuery } from "@/helpers/api.ts";
 import { Link } from "@tanstack/react-router";
 import { Helmet } from "react-helmet";
-import ErrorPage from "@/components/Error.tsx";
-import { PageWithChildren } from "@/helpers/CustomTreeDataProvider.ts";
 import { LoadingBox } from "@/components/LoadingBox.tsx";
+import { Page } from "@/helpers/schema.ts";
+import { usePages } from "@/helpers/databaseHooks.ts";
 
 export default function Home() {
-    const { data, isError, error } = useQuery<PageWithChildren[], Error>(
-        pageListQuery,
-    );
+    const { pages, isFetching } = usePages();
+
     dayjs.extend(relativeTime);
 
-    if (isError) return <ErrorPage message={error?.message} />;
-
-    if (!data) return <LoadingBox />;
+    if (isFetching) return <LoadingBox />;
 
     return (
         <>
@@ -35,7 +29,7 @@ export default function Home() {
                     <div className="relative overflow-x-auto">
                         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <tbody>
-                                {data?.slice(0, 7).map((page: Page) => (
+                                {pages?.slice(0, 7).map((page: Page) => (
                                     <tr
                                         key={page.id}
                                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
