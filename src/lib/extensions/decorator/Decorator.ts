@@ -9,7 +9,7 @@ function runAllDecoratorPlugins(
     doc: ProsemirrorNode,
     plugins: Array<typeof DecoratorPlugin>,
 ) {
-    const decorations: [any?] = [];
+    const decorations: Decoration[] = [];
 
     const results = plugins
         .map((RegisteredDecoratorPlugin) => {
