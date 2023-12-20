@@ -7,7 +7,7 @@ import { ReactNodeViewRenderer } from "@tiptap/react";
 import MentionLink from "../../../components/MentionLink";
 
 export type MentionOptions = {
-    HTMLAttributes: Record<string, any>;
+    HTMLAttributes: Record<string, string>;
     renderLabel: (props: {
         options: MentionOptions;
         node: ProseMirrorNode;

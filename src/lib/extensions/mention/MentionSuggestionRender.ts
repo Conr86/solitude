@@ -1,6 +1,5 @@
 import { ReactRenderer } from "@tiptap/react";
-import tippy from "tippy.js";
-
+import tippy, { Instance } from "tippy.js";
 import {
     MentionSuggestionList,
     MentionSuggestionListHandle,
@@ -14,7 +13,7 @@ export const MentionSuggestionRender: SuggestionOptions<NameUrlPair>["render"] =
             MentionSuggestionListHandle,
             SuggestionProps<NameUrlPair>
         >;
-        let popup: any;
+        let popup: Instance;
 
         return {
             onStart: (props) => {
@@ -23,13 +22,14 @@ export const MentionSuggestionRender: SuggestionOptions<NameUrlPair>["render"] =
                     editor: props.editor,
                 });
 
-                if (!props.clientRect) {
+                if (!props.clientRect || !props.clientRect()) {
                     return;
                 }
 
-                // @ts-ignore
-                popup = tippy("body", {
-                    getReferenceClientRect: props.clientRect,
+                const { element: editorElement } = props.editor.options;
+
+                popup = tippy(editorElement, {
+                    getReferenceClientRect: props.clientRect as () => DOMRect,
                     appendTo: () => document.body,
                     content: component.element,
                     showOnCreate: true,
@@ -46,14 +46,14 @@ export const MentionSuggestionRender: SuggestionOptions<NameUrlPair>["render"] =
                     return;
                 }
 
-                popup[0].setProps({
-                    getReferenceClientRect: props.clientRect,
+                popup.setProps({
+                    getReferenceClientRect: props.clientRect as () => DOMRect,
                 });
             },
 
             onKeyDown(props) {
                 if (props.event.key === "Escape") {
-                    popup[0].hide();
+                    popup.hide();
 
                     return true;
                 }
@@ -62,7 +62,7 @@ export const MentionSuggestionRender: SuggestionOptions<NameUrlPair>["render"] =
             },
 
             onExit() {
-                popup[0].destroy();
+                popup.destroy();
                 component.destroy();
             },
         };
