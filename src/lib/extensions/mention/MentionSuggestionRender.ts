@@ -1,18 +1,24 @@
 import { ReactRenderer } from "@tiptap/react";
 import tippy from "tippy.js";
 
-import MentionList from "../../../components/MentionSuggestionList";
+import {
+    MentionSuggestionList,
+    MentionSuggestionListHandle,
+} from "@/components/MentionSuggestionList.tsx";
 import { NameUrlPair } from "@/lib/tiptap.config";
-import { SuggestionOptions } from "@tiptap/suggestion";
+import { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 
 export const MentionSuggestionRender: SuggestionOptions<NameUrlPair>["render"] =
     () => {
-        let component: ReactRenderer;
+        let component: ReactRenderer<
+            MentionSuggestionListHandle,
+            SuggestionProps<NameUrlPair>
+        >;
         let popup: any;
 
         return {
             onStart: (props) => {
-                component = new ReactRenderer(MentionList, {
+                component = new ReactRenderer(MentionSuggestionList, {
                     props,
                     editor: props.editor,
                 });
@@ -52,8 +58,7 @@ export const MentionSuggestionRender: SuggestionOptions<NameUrlPair>["render"] =
                     return true;
                 }
 
-                // @ts-ignore
-                return component.ref?.onKeyDown(props);
+                return component.ref?.onKeyDown?.(props) || false;
             },
 
             onExit() {

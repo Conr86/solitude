@@ -1,17 +1,15 @@
 import { NameUrlPair } from "@/lib/tiptap.config";
 import { SuggestionProps } from "@tiptap/suggestion";
-import React, {
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-    useState,
-} from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { FaFile } from "react-icons/fa";
 
-const MentionSuggestionList = (
-    props: SuggestionProps<NameUrlPair>,
-    ref: any,
-) => {
+export type MentionSuggestionListHandle = {
+    onKeyDown: ({ event }: { event: KeyboardEvent }) => boolean;
+};
+export const MentionSuggestionList = forwardRef<
+    MentionSuggestionListHandle,
+    SuggestionProps<NameUrlPair>
+>(function MentionSuggestionList(props, ref) {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const selectItem = (index: number) => {
@@ -39,11 +37,7 @@ const MentionSuggestionList = (
     useEffect(() => setSelectedIndex(0), [props.items]);
 
     useImperativeHandle(ref, () => ({
-        onKeyDown: ({
-            event,
-        }: {
-            event: React.KeyboardEvent<HTMLInputElement>;
-        }) => {
+        onKeyDown: ({ event }: { event: KeyboardEvent }) => {
             if (event.key === "ArrowUp") {
                 upHandler();
                 return true;
@@ -70,7 +64,7 @@ const MentionSuggestionList = (
             {props.items.length ? (
                 props.items.map((item: NameUrlPair, index: number) => (
                     <button
-                        className={`flex items-center border rounded-md block text-left px-2 py-2 w-full ${
+                        className={`flex items-center border rounded-md text-left px-2 py-2 w-full ${
                             index === selectedIndex
                                 ? "bg-primary-300 dark:bg-primary-800 dark:text-secondary-100"
                                 : "border-transparent"
@@ -93,6 +87,4 @@ const MentionSuggestionList = (
             )}
         </div>
     );
-};
-
-export default forwardRef(MentionSuggestionList);
+});
