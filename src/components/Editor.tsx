@@ -62,15 +62,15 @@ export default function EditorComponent({
         unsavedChanges: false,
         currentText: activeDocument?.content,
         lastText: activeDocument?.content,
-        currentTitle: activeDocument?.title ?? "New Page",
-        lastTitle: activeDocument?.title ?? "New Page",
+        currentTitle: isNewPage ? "New Page" : activeDocument?.title ?? "",
+        lastTitle: isNewPage ? "New Page" : activeDocument?.title ?? "",
     });
 
     // Update state when content/title changes such as a query refetch
     useEffect(() => {
         dispatch({
             type: "opened",
-            newTitle: activeDocument?.title ?? "New Page",
+            newTitle: isNewPage ? "New Page" : activeDocument?.title ?? "",
             newText: activeDocument?.content,
             newLastSaved: activeDocument?.updatedAt
                 ? new Date(activeDocument?.updatedAt)
