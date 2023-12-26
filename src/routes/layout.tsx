@@ -27,6 +27,7 @@ import { useRxCollection } from "rxdb-hooks";
 import SidebarError from "@/components/SidebarError.tsx";
 import SyncPanel from "@/components/SyncPanel.tsx";
 import { ReplicatorContext } from "@/components/RxProvider.tsx";
+import { Button } from "@/components/ui/button.tsx";
 
 export default function Layout() {
     const { pages, isFetching } = usePages();
@@ -96,10 +97,14 @@ export default function Layout() {
                             Solitude
                         </h1>
                         <Menu as="div" className="ml-auto">
-                            <Menu.Button
-                                className={`p-2 rounded-full dark:text-white hover:ring-1`}
-                            >
-                                <BsThreeDotsVertical />
+                            <Menu.Button as={"div"}>
+                                <Button
+                                    variant={"outline"}
+                                    size={"icon"}
+                                    className={"rounded-full"}
+                                >
+                                    <BsThreeDotsVertical />
+                                </Button>
                             </Menu.Button>
                             <Transition
                                 as={Fragment}

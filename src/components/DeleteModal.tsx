@@ -1,5 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import { Button } from "@/components/ui/button.tsx";
+import { FaTimes, FaTrash } from "react-icons/fa";
 
 interface DeleteModalProps {
     show: boolean;
@@ -49,21 +51,21 @@ export function DeleteModal({ show, onConfirm, onCancel }: DeleteModalProps) {
                                         </p>
                                     </div>
 
-                                    <div className="mt-4">
-                                        <button
+                                    <div className="mt-4 flex justify-end gap-2">
+                                        <Button
                                             type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-red-700 mr-2 px-4 py-2 text-sm font-medium text-secondary-100 hover:bg-red-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                                            onClick={onConfirm}
-                                        >
-                                            Delete
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-secondary-100 mr-2 px-4 py-2 text-sm font-medium text-primary-900 hover:bg-primary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                                            variant={"default"}
                                             onClick={onCancel}
                                         >
-                                            Cancel
-                                        </button>
+                                            <FaTimes className="mr-2" /> Cancel
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant={"destructive"}
+                                            onClick={onConfirm}
+                                        >
+                                            <FaTrash className="mr-2" /> Delete
+                                        </Button>
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>

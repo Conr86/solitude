@@ -1,7 +1,6 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import { useEffect, useState, Fragment, useReducer, useCallback } from "react";
 import { Toolbar } from "./Toolbar";
-import { Button } from "../components/Button";
 import { FaAngleUp, FaMarkdown, FaSave, FaTrash } from "react-icons/fa";
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
@@ -20,6 +19,7 @@ import { useNavigate, useRouter } from "@tanstack/react-router";
 import { usePage, usePages } from "@/lib/db/databaseHooks.ts";
 import { downloadMarkdownExport } from "@/lib/markdownExport.ts";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { Button } from "@/components/ui/button.tsx";
 
 export default function EditorComponent({
     pageId,
@@ -182,9 +182,6 @@ export default function EditorComponent({
         [pageId, activeDocument],
     );
 
-    const buttonClasses =
-        "bg-primary-100 hover:bg-primary-400 dark:bg-transparent dark:hover:bg-primary-900 dark:ring-primary-800 dark:ring-1 dark:hover:ring-primary-900 dark:text-white";
-
     return (
         <div className="pb-4 border-gray-200 dark:border-gray-700 border-b-2">
             {/* Page title */}
@@ -248,7 +245,7 @@ export default function EditorComponent({
                         />
                     </span>
                     <Button
-                        color={buttonClasses}
+                        variant={"outline"}
                         onClick={() => {
                             !isNewPage
                                 ? savePage(pageId, page)
@@ -263,10 +260,14 @@ export default function EditorComponent({
                             as="div"
                             className="relative inline-block text-left"
                         >
-                            <Menu.Button
-                                className={`inline-flex w-full justify-center rounded-full p-3 ${buttonClasses}`}
-                            >
-                                <BsThreeDotsVertical />
+                            <Menu.Button as={"div"}>
+                                <Button
+                                    variant={"outline"}
+                                    size={"icon"}
+                                    className={"rounded-full"}
+                                >
+                                    <BsThreeDotsVertical />
+                                </Button>
                             </Menu.Button>
                             <Transition
                                 as={Fragment}

@@ -21,7 +21,7 @@ export default function DarkModeSwitcher() {
                                 `flex justify-center grow p-3 first:rounded-tl-md last:rounded-tr-md text-secondary-800`,
                                 {
                                     "bg-secondary-100": active,
-                                    "bg-primary-200 text-primary-800":
+                                    "bg-secondary-300 text-primary-800":
                                         activeTheme === mode,
                                 },
                             )}

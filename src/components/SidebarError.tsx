@@ -1,4 +1,5 @@
-import { Outlet } from "@tanstack/react-router";
+import { Link, Outlet } from "@tanstack/react-router";
+import { FaCog } from "react-icons/fa";
 
 export default function SidebarError() {
     return (
@@ -9,7 +10,7 @@ export default function SidebarError() {
                 aria-label="Sidebar"
             >
                 <div className="h-full overflow-y-auto bg-secondary-100 dark:bg-secondary-800">
-                    <div className="flex h-screen w-full justify-center items-center">
+                    <div className="flex flex-col gap-4 h-screen w-full justify-center items-center">
                         <img
                             className="animate-pulse mx-auto float-center w-1/2 "
                             src="/logo.svg"
@@ -17,6 +18,12 @@ export default function SidebarError() {
                             width={100}
                             height={100}
                         />
+                        <Link
+                            to={"/settings"}
+                            className="flex items-center text-secondary-400 dark:text-secondary-900 hover:underline"
+                        >
+                            <FaCog className="mr-2" /> Settings
+                        </Link>
                     </div>
                 </div>
             </aside>
