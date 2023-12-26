@@ -38,7 +38,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 export function useTheme(): {
     activeTheme: ThemeType;
     setActiveTheme: (theme: ThemeType) => void;
+    resolvedTheme: () => "light" | "dark";
 } {
     const [activeTheme, setActiveTheme] = useAtom(themeAtom);
-    return { activeTheme, setActiveTheme };
+    const resolvedTheme = () =>
+        document.querySelector("html")?.classList?.contains("dark")
+            ? "dark"
+            : "light";
+    return { activeTheme, setActiveTheme, resolvedTheme };
 }
