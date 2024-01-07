@@ -30,13 +30,10 @@ A minimalist web-app for focused writing and note-taking. Currently in early sta
 ## Uses
 - [Vite](https://vitejs.dev/) for React bundling
 - [Tauri](https://tauri.app/) for offline client bundling
-- [Typescript](https://www.typescriptlang.org/) for (almost) everything
 - [Tiptap](https://www.tiptap.dev/) as text editor backend
 - [TailwindCSS](https://tailwindcss.com/) for styling
 - [RxDB](https://github.com/pubkey/rxdb) for local offline database
 - [Supabase](https://supabase.com/) for remote database
-
-Currently, uses a SQLite database via Prisma, but this can be swapped out for any database that Prisma supports with minimal changes.
 
 ## Development
 
