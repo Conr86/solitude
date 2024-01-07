@@ -95,8 +95,11 @@ export default function Settings() {
                     />
                 </div>
                 <div className="flex flex-row justify-end">
-                    {session && (
-                        <Button className="mr-auto flex gap-2">
+                    {session?.user && (
+                        <Button
+                            className="mr-auto flex gap-2"
+                            onClick={() => supabase?.auth.signOut()}
+                        >
                             <FaSignOutAlt /> Logout
                         </Button>
                     )}

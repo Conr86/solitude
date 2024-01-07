@@ -7,7 +7,6 @@ import { RxError } from "rxdb";
 import { cn } from "@/lib/utils.ts";
 import dayjs from "dayjs";
 import { Button } from "@/components/ui/button.tsx";
-import useSession from "@/lib/useSession.ts";
 
 export default function SyncPanel() {
     const { online } = useNetworkState();
@@ -16,13 +15,12 @@ export default function SyncPanel() {
     const [synced, setSynced] = useState<Date | undefined>(undefined);
     const replication = useContext(ReplicatorContext);
 
-    const { session } = useSession();
+    // const { session } = useSession();
 
     // Subscribe to finished sync event
     useEffect(() => {
-        if (online && session)
-            replication.awaitInSync().then(() => setSynced(new Date()));
-    }, [replication, online, session]);
+        if (online) replication.awaitInSync().then(() => setSynced(new Date()));
+    }, [online]);
 
     // Sync when network reconnects
     useEffect(() => {
@@ -46,7 +44,7 @@ export default function SyncPanel() {
     }, [errors, replication, replication?.active$, replication?.error$]);
 
     const syncButtonHandler = () => {
-        if (online && session) replication?.reSync();
+        if (online) replication?.reSync();
     };
 
     return (
@@ -66,11 +64,7 @@ export default function SyncPanel() {
                 </Link>
                 <div className="flex flex-col text-center">
                     <span className="text-sm">
-                        {synced
-                            ? "Synced"
-                            : session
-                            ? "Waiting..."
-                            : "Not signed in"}
+                        {synced ? "Synced" : "Waiting..."}
                     </span>
                     {!!synced && (
                         <span className="text-xs dark:text-secondary-400 text-secondary-500">
